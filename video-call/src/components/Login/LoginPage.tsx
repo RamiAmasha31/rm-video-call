@@ -1,14 +1,23 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { useVideoClient } from "../VideoClientContext"; // Import the useVideoClient hook
+
 import "./Login.css";
-import { useNavigate } from "react-router-dom"; // Import useNavigate hook
+
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate(); // Initialize useNavigate hook
+  const { setClientDetails } = useVideoClient(); // Destructure setClientDetails from context
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,27 +37,33 @@ function LoginPage() {
       // Initialize Firestore
       const db = getFirestore();
 
-      // Add a new document with a generated ID
-      const docRef = await addDoc(collection(db, "users"), {
-        email: email,
-        password: password,
-      });
+      // Query Firestore for the user document based on email and password
+      const q = query(
+        collection(db, "users"),
+        where("email", "==", email),
+        where("password", "==", password)
+      );
+      const querySnapshot = await getDocs(q);
 
-      console.log("Document written with ID: ", docRef.id);
+      if (querySnapshot.empty) {
+        setEmailError("Invalid email or password");
+        return;
+      }
 
-      // Clear form inputs after successful login
-      setEmail("");
-      setPassword("");
-      setEmailError("");
-      setPasswordError("");
+      // Assuming there's only one user document that matches the query
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
+
+      const userId = userData.userId;
+      const token = userData.token;
+      console.log(token);
+      // Set the client details in context
+      setClientDetails(userId, token);
 
       // Navigate to home page after successful login
       navigate("/home");
-
-      // Handle success (show message, etc.)
-      console.log("User data stored successfully!");
     } catch (error) {
-      console.error("Error storing user data:", error);
+      console.error("Error during login:", error);
       // Handle error (show error message, retry, etc.)
     }
   };
