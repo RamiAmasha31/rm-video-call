@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useVideoClient } from "../VideoClientContext";
 import {
   StreamCall,
@@ -10,12 +10,21 @@ import {
   CallingState,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
+import exit from "../../assets/HomePage/exit.png";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
 const JoinMeeting = () => {
   const navigate = useNavigate();
   const { client } = useVideoClient();
   const [meetingId, setMeetingId] = useState("");
   const [call, setCall] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(true);
 
   useEffect(() => {
     // Check if there's a stored call ID in localStorage
@@ -58,38 +67,54 @@ const JoinMeeting = () => {
 
       // Store the current call ID in localStorage for persistence
       localStorage.setItem("currentCallId", callId);
+      setDialogOpen(false); // Close the dialog
     } catch (error) {
       console.error("Error joining call:", error);
       // Handle error (show message, retry, etc.)
     }
   };
 
-  const handleGoBack = () => {
-    navigate("/home");
+  const handleLogout = () => {
+    navigate("/");
+    // Implement logout logic here
+    // For example, clear session, localStorage, etc.
   };
 
   return (
     <div className="join-meeting-page">
-      <nav className="navbar">
-        <div className="navbar-brand">Join Meeting</div>
-        <div className="navbar-links">
-          <button onClick={handleGoBack} className="nav-link">
-            Go Back
-          </button>
-        </div>
-      </nav>
+      <Link to="/" className="exit-button">
+        <img
+          src={exit}
+          onClick={handleLogout}
+          alt="Exit"
+          className="exit-icon"
+        />
+      </Link>
       <div className="main-content">
         {!call ? (
-          <div className="join-dialog">
-            <h2>Enter Meeting ID</h2>
-            <input
-              type="text"
-              value={meetingId}
-              onChange={(e) => setMeetingId(e.target.value)}
-              placeholder="Enter Meeting ID"
-            />
-            <button onClick={handleJoinMeeting}>Join Meeting</button>
-          </div>
+          <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+            <DialogTitle>Enter Meeting ID</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Please enter the meeting ID to join the meeting.
+              </DialogContentText>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="meeting-id"
+                label="Meeting ID"
+                type="text"
+                fullWidth
+                variant="standard"
+                value={meetingId}
+                onChange={(e) => setMeetingId(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button onClick={handleJoinMeeting}>Join Meeting</Button>
+            </DialogActions>
+          </Dialog>
         ) : (
           <StreamCall call={call}>
             <JoinedMeetingUI call={call} />

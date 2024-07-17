@@ -71,9 +71,6 @@ const CreateMeeting = () => {
 
   return (
     <div className="create-meeting-page">
-      <nav className="navbar">
-        <div className="navbar-brand">Create Meeting</div>
-      </nav>
       <div className="main-content">
         {call ? (
           <StreamCall call={call}>

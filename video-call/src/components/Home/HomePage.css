@@ -1,0 +1,116 @@
+.home-page {
+  font-family: "Roboto", "Playfair Display", "Montserrat" "Lora";
+}
+
+.main-content {
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Section Styles */
+.section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.section-in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.brand-section {
+  /* background: #1a202c; */
+  padding: 2rem;
+}
+
+.cards-section {
+  /* background: #2d3748; */
+  padding: 2rem;
+}
+
+.about-section {
+  /* background: #4a5568; */
+  padding: 2rem;
+}
+
+.staff-section {
+  /* background: #718096; */
+  padding: 2rem;
+}
+
+.brand-typography {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.cards-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 1rem;
+  width: 200px;
+  text-align: center;
+  background: #566583;
+  color: white;
+  text-decoration: none;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+.exit-icon {
+  width: 40px; /* Adjust the size as needed */
+  position: absolute;
+  height: 40px;
+  cursor: pointer;
+  top: 20px;
+  right: 20px;
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.about-us,
+.staff-members {
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.staff-member {
+  display: inline-block;
+  margin: 1rem;
+  text-align: center;
+}
+
+.staff-member img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .cards-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
+    width: 80%;
+    margin-bottom: 1rem;
+  }
+}
