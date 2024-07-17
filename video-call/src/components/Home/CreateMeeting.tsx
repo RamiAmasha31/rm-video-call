@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVideoClient } from "../VideoClientContext";
 import {
@@ -7,39 +7,75 @@ import {
   StreamCall,
   StreamTheme,
   CallControls,
-  CancelCallButton,
   useCallStateHooks,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
-const MyUILayout = React.memo(({ client, call }) => {
-  const { useCallCallingState } = useCallStateHooks();
-  const callingState = useCallCallingState();
-  const navigate = useNavigate();
+const generateCallId = () => {
+  return `call-${Math.random().toString(36).substr(2, 9)}`;
+};
 
-  const handleLeaveCall = useCallback(() => {
-    if (call) {
-      call.endCall();
+const MyUILayout = React.memo(
+  ({ client, call, callId, dialogOpen, onCloseDialog }) => {
+    const { useCallCallingState } = useCallStateHooks();
+    const callingState = useCallCallingState();
+    const navigate = useNavigate();
 
-      navigate("/home");
+    const handleLeaveCall = useCallback(() => {
+      if (call) {
+        call.endCall();
+        navigate("/home");
+      }
+    }, [call, navigate]);
+
+    if (callingState !== CallingState.JOINED) {
+      return <div>Loading...</div>;
     }
-  }, [call, navigate]);
 
-  if (callingState !== CallingState.JOINED) {
-    return <div>Loading...</div>;
+    return (
+      <StreamTheme>
+        <SpeakerLayout participantsBarPosition="top" />
+        <CallControls onLeave={handleLeaveCall} />
+        <Dialog open={dialogOpen}>
+          <DialogTitle>Meeting ID</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Share this Meeting ID with others to let them join the call.
+            </DialogContentText>
+            <TextField
+              value={callId}
+              InputProps={{
+                readOnly: true,
+              }}
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => navigator.clipboard.writeText(callId)}>
+              Copy
+            </Button>
+            <Button onClick={onCloseDialog} color="secondary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </StreamTheme>
+    );
   }
-
-  return (
-    <StreamTheme>
-      <SpeakerLayout participantsBarPosition="top" />
-      <CallControls onLeave={handleLeaveCall} />
-    </StreamTheme>
-  );
-});
+);
 
 const CreateMeeting = () => {
   const { client } = useVideoClient();
-  const [call, setCall] = React.useState(null);
+  const [call, setCall] = useState(null);
+  const [callId, setCallId] = useState(localStorage.getItem("callId") || "");
+  const [dialogOpen, setDialogOpen] = useState(true);
 
   // Function to create and join the meeting
   const handleCreateMeeting = useCallback(async () => {
@@ -49,10 +85,13 @@ const CreateMeeting = () => {
     }
 
     const callType = "default";
-    const callId = "test-call"; // Replace with dynamic call ID logic if needed
+    const newCallId = callId || generateCallId();
+    setCallId(newCallId);
+    localStorage.setItem("callId", newCallId);
+
     if (!call) {
       try {
-        const newCall = client.call(callType, callId);
+        const newCall = client.call(callType, newCallId);
         await newCall.getOrCreate();
         await newCall.join();
         console.log("Call created and joined successfully:", newCall);
@@ -62,19 +101,29 @@ const CreateMeeting = () => {
         // Handle error (show message, retry, etc.)
       }
     }
-  }, [client]);
+  }, [client, call, callId]);
 
   // useEffect to handle meeting creation on component mount
   useEffect(() => {
     handleCreateMeeting(); // Call the function to create and join the meeting
   }, [handleCreateMeeting]);
 
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
   return (
     <div className="create-meeting-page">
       <div className="main-content">
         {call ? (
           <StreamCall call={call}>
-            <MyUILayout client={client} call={call} />
+            <MyUILayout
+              client={client}
+              call={call}
+              callId={callId}
+              dialogOpen={dialogOpen}
+              onCloseDialog={handleCloseDialog}
+            />
           </StreamCall>
         ) : (
           <div>Loading...</div>
