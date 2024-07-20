@@ -1,12 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
 import { useVideoClient } from "../VideoClientContext"; // Import the useVideoClient hook
 
 import "./Login.css";
@@ -19,7 +12,7 @@ function LoginPage() {
   const navigate = useNavigate(); // Initialize useNavigate hook
   const { setClientDetails } = useVideoClient(); // Destructure setClientDetails from context
 
-  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
 
     try {
@@ -34,37 +27,31 @@ function LoginPage() {
         return;
       }
 
-      // Initialize Firestore
-      const db = getFirestore();
+      // Make POST request to server endpoint using Fetch API
+      const response = await fetch("http://localhost:3002/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      // Query Firestore for the user document based on email and password
-      const q = query(
-        collection(db, "users"),
-        where("email", "==", email),
-        where("password", "==", password)
-      );
-      const querySnapshot = await getDocs(q);
-
-      if (querySnapshot.empty) {
-        setEmailError("Invalid email or password");
-        return;
+      // Check if the response is OK
+      if (!response.ok) {
+        throw new Error("Invalid email or password");
       }
 
-      // Assuming there's only one user document that matches the query
-      const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data();
+      const data = await response.json();
+      const { userId, token } = data;
 
-      const userId = userData.userId;
-      const token = userData.token;
-      console.log(token);
-      // Set the client details in context
       setClientDetails(userId, token);
 
       // Navigate to home page after successful login
       navigate("/home");
     } catch (error) {
       console.error("Error during login:", error);
-      // Handle error (show error message, retry, etc.)
+      setEmailError("Invalid email or password");
+      setPasswordError("Invalid email or password");
     }
   };
 
