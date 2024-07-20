@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVideoClient } from "../VideoClientContext";
 import {
@@ -77,6 +77,8 @@ const CreateMeeting = () => {
   const [callId, setCallId] = useState(localStorage.getItem("callId") || "");
   const [dialogOpen, setDialogOpen] = useState(true);
 
+  const hasInitializedRef = useRef(false);
+
   // Function to create and join the meeting
   const handleCreateMeeting = useCallback(async () => {
     if (!client) {
@@ -105,7 +107,11 @@ const CreateMeeting = () => {
 
   // useEffect to handle meeting creation on component mount
   useEffect(() => {
-    handleCreateMeeting(); // Call the function to create and join the meeting
+    if (!hasInitializedRef.current) {
+      console.log("im in use effect");
+      handleCreateMeeting(); // Call the function to create and join the meeting
+      hasInitializedRef.current = true; // Set the ref to true to avoid re-running
+    }
   }, [handleCreateMeeting]);
 
   const handleCloseDialog = () => {
