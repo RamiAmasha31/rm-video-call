@@ -132,6 +132,39 @@ app.post("/api/meeting/add-participant", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// Fetch participants for a specific call ID
+app.get("/api/meeting/:callId/participants", async (req, res) => {
+  const { callId } = req.params;
+
+  try {
+    if (!callId) {
+      return res.status(400).json({ error: "Call ID is required" });
+    }
+
+    // Search for the document where callId matches
+    const meetingQuery = query(
+      collection(db, "meetings"),
+      where("callId", "==", callId)
+    );
+    const querySnapshot = await getDocs(meetingQuery);
+
+    if (querySnapshot.empty) {
+      return res.status(404).json({ error: "Meeting not found" });
+    }
+
+    // Assuming there's only one document with the matching callId
+    const meetingDoc = querySnapshot.docs[0];
+    const meetingData = meetingDoc.data();
+
+    // Respond with the list of participants
+    res.status(200).json(meetingData.participants || []);
+  } catch (error) {
+    console.error("Error fetching participants:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

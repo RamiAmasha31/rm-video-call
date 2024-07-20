@@ -28,12 +28,46 @@ const MyUILayout = React.memo(
     const callingState = useCallCallingState();
     const navigate = useNavigate();
 
-    const handleLeaveCall = useCallback(() => {
-      if (call) {
-        call.endCall();
-        navigate("/home");
+    const fetchParticipants = async (callId) => {
+      try {
+        const response = await fetch(
+          `http://localhost:3002/api/meeting/${callId}/participants`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text(); // Get the error message from the server
+          throw new Error(`Failed to fetch participants: ${errorText}`);
+        }
+
+        const participants = await response.json(); // Parse the response as JSON
+        console.log("Participants:", participants);
+        // You might want to do something with the participants here
+      } catch (error) {
+        console.error("Error fetching participants:", error);
       }
-    }, [call, navigate]);
+    };
+
+    const handleLeaveCall = useCallback(async () => {
+      if (call) {
+        try {
+          console.log("Leaving call with ID:", callId);
+          // Fetch participants before ending the call
+          await fetchParticipants(callId);
+
+          // End the call
+          await call.endCall();
+          navigate("/home");
+        } catch (error) {
+          console.error("Error during leaving the call:", error);
+        }
+      }
+    }, [call, callId, navigate]);
 
     if (callingState !== CallingState.JOINED) {
       return <div>Loading...</div>;
@@ -42,7 +76,7 @@ const MyUILayout = React.memo(
     return (
       <StreamTheme>
         <SpeakerLayout participantsBarPosition="top" />
-        <CallControls onLeave={handleLeaveCall} />
+        <CallControls onLeave={() => handleLeaveCall()} />
         <Dialog open={dialogOpen}>
           <DialogTitle>Meeting ID</DialogTitle>
           <DialogContent>
@@ -82,12 +116,13 @@ const CreateMeeting = () => {
   // Function to send data to the server
   const sendMeetingDataToServer = useCallback(async (meetingId, userId) => {
     try {
+      console.log("Sending meeting data to server with ID:", meetingId);
       const response = await fetch("http://localhost:3002/api/meeting", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ callId, userId }), // Ensure the key names match what the server expects
+        body: JSON.stringify({ callId: meetingId, userId }), // Ensure the key names match what the server expects
       });
 
       if (!response.ok) {
@@ -128,12 +163,11 @@ const CreateMeeting = () => {
         // Handle error (show message, retry, etc.)
       }
     }
-  }, [client, call, callId, user, sendMeetingDataToServer]);
+  }, [client, call, user, sendMeetingDataToServer]);
 
   // useEffect to handle meeting creation on component mount
   useEffect(() => {
     if (!hasInitializedRef.current) {
-      // console.log("im in use effect");
       handleCreateMeeting(); // Call the function to create and join the meeting
       hasInitializedRef.current = true; // Set the ref to true to avoid re-running
     }
