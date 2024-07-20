@@ -21,10 +21,37 @@ import TextField from "@mui/material/TextField";
 
 const JoinMeeting = () => {
   const navigate = useNavigate();
-  const { client } = useVideoClient();
-  const [meetingId, setMeetingId] = useState("");
+  const { client, user } = useVideoClient(); // Extract user from context
+  const [callId, setCallId] = useState("");
   const [call, setCall] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(true);
+
+  // Function to send participant data to the server
+  const sendParticipantDataToServer = async (callId, userId) => {
+    try {
+      const response = await fetch(
+        "http://localhost:3002/api/meeting/add-participant",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ callId, userId }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text(); // Get the error message from the server
+        throw new Error(
+          `Failed to send participant data to server: ${errorText}`
+        );
+      }
+
+      console.log("Participant data sent successfully");
+    } catch (error) {
+      console.error("Error sending participant data:", error);
+    }
+  };
 
   useEffect(() => {
     // Check if there's a stored call ID in localStorage
@@ -33,14 +60,19 @@ const JoinMeeting = () => {
     // If there's a stored call ID, attempt to join the call on mount
     if (storedCallId && client) {
       const callType = "default";
-      const callId = storedCallId.trim(); // Use the stored meeting ID
+      const trimmedCallId = storedCallId.trim(); // Use the stored call ID
 
       const joinStoredCall = async () => {
         try {
-          const existingCall = client.call(callType, callId);
+          const existingCall = client.call(callType, trimmedCallId);
           await existingCall.join();
           console.log("Joined existing call successfully:", existingCall);
           setCall(existingCall); // Set the active call instance
+
+          // Send participant data to the server
+          if (user) {
+            await sendParticipantDataToServer(trimmedCallId, user.id);
+          }
         } catch (error) {
           console.error("Error joining existing call:", error);
           // Handle error (show message, retry, etc.)
@@ -49,25 +81,30 @@ const JoinMeeting = () => {
 
       joinStoredCall();
     }
-  }, [client]);
+  }, [client, user]);
 
   const handleJoinMeeting = async () => {
     const callType = "default";
-    const callId = meetingId.trim(); // Use the entered meeting ID
+    const trimmedCallId = callId.trim(); // Use the entered call ID
     if (!client) {
       console.error("StreamVideoClient is not initialized.");
       return;
     }
 
     try {
-      const newCall = client.call(callType, callId);
+      const newCall = client.call(callType, trimmedCallId);
       await newCall.join();
       console.log("Joined call successfully:", newCall);
       setCall(newCall); // Set the active call instance
 
       // Store the current call ID in localStorage for persistence
-      localStorage.setItem("currentCallId", callId);
+      localStorage.setItem("currentCallId", trimmedCallId);
       setDialogOpen(false); // Close the dialog
+
+      // Send participant data to the server
+      if (user) {
+        await sendParticipantDataToServer(trimmedCallId, user.id);
+      }
     } catch (error) {
       console.error("Error joining call:", error);
       // Handle error (show message, retry, etc.)
@@ -93,21 +130,21 @@ const JoinMeeting = () => {
       <div className="main-content">
         {!call ? (
           <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-            <DialogTitle>Enter Meeting ID</DialogTitle>
+            <DialogTitle>Enter Call ID</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Please enter the meeting ID to join the meeting.
+                Please enter the call ID to join the meeting.
               </DialogContentText>
               <TextField
                 autoFocus
                 margin="dense"
-                id="meeting-id"
-                label="Meeting ID"
+                id="call-id"
+                label="Call ID"
                 type="text"
                 fullWidth
                 variant="standard"
-                value={meetingId}
-                onChange={(e) => setMeetingId(e.target.value)}
+                value={callId}
+                onChange={(e) => setCallId(e.target.value)}
               />
             </DialogContent>
             <DialogActions>

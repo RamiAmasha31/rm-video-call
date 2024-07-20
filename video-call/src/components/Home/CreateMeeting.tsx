@@ -72,22 +72,44 @@ const MyUILayout = React.memo(
 );
 
 const CreateMeeting = () => {
-  const { client } = useVideoClient();
+  const { client, user } = useVideoClient(); // Extract user from context
   const [call, setCall] = useState(null);
   const [callId, setCallId] = useState(localStorage.getItem("callId") || "");
   const [dialogOpen, setDialogOpen] = useState(true);
 
   const hasInitializedRef = useRef(false);
 
+  // Function to send data to the server
+  const sendMeetingDataToServer = useCallback(async (meetingId, userId) => {
+    try {
+      const response = await fetch("http://localhost:3002/api/meeting", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ callId, userId }), // Ensure the key names match what the server expects
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text(); // Get the error message from the server
+        throw new Error(`Failed to send meeting data to server: ${errorText}`);
+      }
+
+      console.log("Meeting data sent successfully");
+    } catch (error) {
+      console.error("Error sending meeting data:", error);
+    }
+  }, []);
+
   // Function to create and join the meeting
   const handleCreateMeeting = useCallback(async () => {
-    if (!client) {
-      console.error("StreamVideoClient is not initialized.");
+    if (!client || !user) {
+      console.error("StreamVideoClient or user is not initialized.");
       return;
     }
 
     const callType = "default";
-    const newCallId = callId || generateCallId();
+    const newCallId = generateCallId();
     setCallId(newCallId);
     localStorage.setItem("callId", newCallId);
 
@@ -98,17 +120,20 @@ const CreateMeeting = () => {
         await newCall.join();
         console.log("Call created and joined successfully:", newCall);
         setCall(newCall); // Update the call state
+
+        // Send meeting ID and user ID to the server
+        await sendMeetingDataToServer(newCallId, user.id);
       } catch (error) {
         console.error("Error creating or joining call:", error);
         // Handle error (show message, retry, etc.)
       }
     }
-  }, [client, call, callId]);
+  }, [client, call, callId, user, sendMeetingDataToServer]);
 
   // useEffect to handle meeting creation on component mount
   useEffect(() => {
     if (!hasInitializedRef.current) {
-      console.log("im in use effect");
+      // console.log("im in use effect");
       handleCreateMeeting(); // Call the function to create and join the meeting
       hasInitializedRef.current = true; // Set the ref to true to avoid re-running
     }

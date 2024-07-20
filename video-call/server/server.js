@@ -11,6 +11,7 @@ const {
   addDoc,
   updateDoc,
   doc,
+  getDoc,
 } = require("firebase/firestore");
 
 const app = express();
@@ -68,6 +69,7 @@ app.post("/api/login", async (req, res) => {
 // Create meeting endpoint
 app.post("/api/meeting", async (req, res) => {
   const { callId, userId } = req.body;
+  // console.log("server:", callId, userId);
   try {
     if (!callId || !userId) {
       return res
@@ -91,24 +93,30 @@ app.post("/api/meeting", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 // Add participant to meeting endpoint
 app.post("/api/meeting/add-participant", async (req, res) => {
-  const { meetingId, userId } = req.body;
+  const { callId, userId } = req.body;
   try {
-    if (!meetingId || !userId) {
+    if (!callId || !userId) {
       return res
         .status(400)
-        .json({ error: "Meeting ID and User ID are required" });
+        .json({ error: "Call ID and User ID are required" });
     }
 
-    const meetingRef = doc(db, "meetings", meetingId);
-    const meetingDoc = await getDoc(meetingRef);
+    // Search for the document where callId matches
+    const meetingQuery = query(
+      collection(db, "meetings"),
+      where("callId", "==", callId)
+    );
+    const querySnapshot = await getDocs(meetingQuery);
 
-    if (!meetingDoc.exists()) {
+    if (querySnapshot.empty) {
       return res.status(404).json({ error: "Meeting not found" });
     }
 
+    // Assuming there's only one document with the matching callId
+    const meetingDoc = querySnapshot.docs[0];
+    const meetingRef = meetingDoc.ref;
     const meetingData = meetingDoc.data();
     const participants = meetingData.participants || [];
 
@@ -124,7 +132,6 @@ app.post("/api/meeting/add-participant", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 // Start server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
