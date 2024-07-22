@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVideoClient } from "../VideoClientContext";
 import {
@@ -19,6 +19,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import "./CreateMeeting.css";
+
 const generateCallId = () => `call-${Math.random().toString(36).substr(2, 9)}`;
 
 const MyUILayout = React.memo(
@@ -179,7 +180,7 @@ const CreateMeeting = () => {
   const [call, setCall] = useState(null);
   const [callId, setCallId] = useState(localStorage.getItem("callId") || "");
   const [dialogOpen, setDialogOpen] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading state
 
   const hasInitializedRef = useRef(false);
 
@@ -231,11 +232,27 @@ const CreateMeeting = () => {
   }, [client, call, user, sendMeetingDataToServer]);
 
   useEffect(() => {
-    if (!hasInitializedRef.current) {
-      handleCreateMeeting();
+    if (client && user && !hasInitializedRef.current) {
+      if (callId) {
+        // Rejoin existing call
+        const rejoinCall = async () => {
+          try {
+            const existingCall = client.call("default", callId);
+            await existingCall.getOrCreate();
+            await existingCall.join();
+            setCall(existingCall);
+          } catch (error) {
+            console.error("Error rejoining call:", error);
+          }
+        };
+        rejoinCall();
+      } else {
+        handleCreateMeeting();
+      }
       hasInitializedRef.current = true;
+      setLoading(false); // Set loading to false when initialized
     }
-  }, [handleCreateMeeting]);
+  }, [client, user, callId, handleCreateMeeting]);
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
@@ -246,10 +263,10 @@ const CreateMeeting = () => {
       <div className="main-content">
         {loading ? (
           <Dialog open={loading}>
-            <DialogTitle>Processing</DialogTitle>
+            <DialogTitle>Loading</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Please wait while processing the meeting data!
+                Please wait while we set up your meeting.
               </DialogContentText>
               <CircularProgress />
             </DialogContent>
@@ -264,7 +281,7 @@ const CreateMeeting = () => {
                   callId={callId}
                   dialogOpen={dialogOpen}
                   onCloseDialog={handleCloseDialog}
-                  onSetLoading={setLoading} // Pass setLoading to MyUILayout
+                  onSetLoading={setLoading}
                 />
               </StreamCall>
             ) : (
