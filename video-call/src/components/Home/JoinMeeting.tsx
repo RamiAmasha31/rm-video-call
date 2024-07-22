@@ -3,11 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useVideoClient } from "../VideoClientContext";
 import {
   StreamCall,
-  CallControls,
   StreamTheme,
   SpeakerLayout,
   useCallStateHooks,
   CallingState,
+  CancelCallButton,
+  ToggleAudioPublishingButton,
+  ToggleVideoPublishingButton,
+  ScreenShareButton,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import exit from "../../assets/HomePage/exit.png";
@@ -18,6 +21,16 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+
+// Custom CallControls component without RecordCallButton
+const CallControls = ({ onLeave }) => (
+  <div className="str-video__call-controls">
+    <ToggleAudioPublishingButton />
+    <ToggleVideoPublishingButton />
+    <ScreenShareButton />
+    <CancelCallButton onLeave={onLeave} />
+  </div>
+);
 
 const JoinMeeting = () => {
   const navigate = useNavigate();

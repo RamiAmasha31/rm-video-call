@@ -36,7 +36,7 @@ const client = new AssemblyAI({
 
 const app = express();
 const port = process.env.PORT || 3002;
-app.use("/files", express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json()); // Middleware to parse JSON bodies

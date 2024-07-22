@@ -174,11 +174,10 @@ const MyUILayout = React.memo(
     );
   }
 );
-
 const CreateMeeting = () => {
   const { client, user } = useVideoClient();
   const [call, setCall] = useState(null);
-  const [callId, setCallId] = useState(localStorage.getItem("callId") || "");
+  const [callId, setCallId] = useState(sessionStorage.getItem("callId") || "");
   const [dialogOpen, setDialogOpen] = useState(true);
   const [loading, setLoading] = useState(true); // Start with loading state
 
@@ -213,7 +212,7 @@ const CreateMeeting = () => {
     const callType = "default";
     const newCallId = generateCallId();
     setCallId(newCallId);
-    localStorage.setItem("callId", newCallId);
+    sessionStorage.setItem("callId", newCallId); // Store in sessionStorage
 
     if (!call) {
       try {
@@ -295,5 +294,4 @@ const CreateMeeting = () => {
     </div>
   );
 };
-
 export default CreateMeeting;

@@ -6,20 +6,23 @@ import HomePage from "./components/Home/HomePage";
 import CreateMeeting from "./components/Home/CreateMeeting"; // Import the CreateMeeting component
 import JoinMeeting from "./components/Home/JoinMeeting"; // Import the CreateMeeting component
 import Logs from "./components/Home/Logs"; // Import the Logs component
+import { VideoClientProvider } from "./components/VideoClientContext";
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/create-meeting" element={<CreateMeeting />} />{" "}
-        <Route path="/join-meeting" element={<JoinMeeting />} />{" "}
-        <Route path="/display-logs" element={<Logs />} />
-        {/* Define route for CreateMeeting component */}
-      </Routes>
-    </Router>
+    <VideoClientProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/create-meeting" element={<CreateMeeting />} />{" "}
+          <Route path="/join-meeting" element={<JoinMeeting />} />{" "}
+          <Route path="/display-logs" element={<Logs />} />
+          {/* Define route for CreateMeeting component */}
+        </Routes>
+      </Router>
+    </VideoClientProvider>
   );
 };
 

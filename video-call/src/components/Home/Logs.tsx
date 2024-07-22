@@ -95,7 +95,12 @@ const Logs: React.FC = () => {
                   {/* PDF Icon */}
                 </td>
                 <td>
-                  <a href={log} download>
+                  <a
+                    href={`http://localhost:3002/${log}`}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Download
                   </a>
                 </td>
