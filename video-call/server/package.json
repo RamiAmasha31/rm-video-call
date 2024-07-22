@@ -13,10 +13,12 @@
   "description": "",
   "dependencies": {
     "assemblyai": "^4.6.1",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "firebase": "^10.12.4",
     "firebase-admin": "^12.2.0",
-    "pdfkit": "^0.15.0"
+    "pdfkit": "^0.15.0",
+    "stream-chat": "^8.37.0"
   }
 }

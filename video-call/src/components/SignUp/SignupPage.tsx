@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SignupPage.css";
 
 const SignupPage: React.FC = () => {
@@ -8,8 +9,9 @@ const SignupPage: React.FC = () => {
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
+  const navigate = useNavigate();
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setEmailError("");
     setPasswordError("");
@@ -30,7 +32,26 @@ const SignupPage: React.FC = () => {
       return;
     }
 
-    // Implement your signup logic here
+    try {
+      const response = await fetch("http://localhost:3002/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Signup failed");
+      }
+
+      navigate("/home");
+    } catch (error) {
+      console.error("Error during signup:", error);
+      setEmailError("Signup failed, please try again");
+      setPasswordError("Signup failed, please try again");
+      setConfirmPasswordError("Signup failed, please try again");
+    }
   };
 
   return (
@@ -42,7 +63,7 @@ const SignupPage: React.FC = () => {
             value={email}
             placeholder="Enter email address here"
             onChange={(e) => setEmail(e.target.value)}
-            className={"user-box"}
+            className="user-box"
           />
           <label className="errorLabel">{emailError}</label>
         </div>
@@ -50,8 +71,9 @@ const SignupPage: React.FC = () => {
           <input
             value={password}
             placeholder="Enter password here"
+            type="password"
             onChange={(e) => setPassword(e.target.value)}
-            className={"user-box"}
+            className="user-box"
           />
           <label className="errorLabel">{passwordError}</label>
         </div>
@@ -59,12 +81,13 @@ const SignupPage: React.FC = () => {
           <input
             value={confirmPassword}
             placeholder="Confirm password"
+            type="password"
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className={"user-box"}
+            className="user-box"
           />
           <label className="errorLabel">{confirmPasswordError}</label>
         </div>
-        <button type="submit" className={"inputButton"}>
+        <button type="submit" className="inputButton">
           Sign Up
         </button>
       </form>

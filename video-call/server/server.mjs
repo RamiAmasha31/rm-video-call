@@ -1,6 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import bcrypt from "bcrypt";
+
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -17,6 +19,16 @@ import { AssemblyAI } from "assemblyai";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { StreamChat } from "stream-chat";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const apiKey = "rgkeykz9gwms";
+const apiSecret =
+  "pdp3t3ctp7y2qnv2syhrxdta6fq2v2nruaadjrqgjync2auwbkrce8bp78a3ym6b";
+const serverClient = StreamChat.getInstance(apiKey, apiSecret);
 
 const client = new AssemblyAI({
   apiKey: "1a5a346f633e470e9f016aa179de9fca",
@@ -25,12 +37,7 @@ const client = new AssemblyAI({
 const app = express();
 const port = process.env.PORT || 3002;
 app.use("/files", express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname, "..", "dist")));
 
-// Serve the React app for all other routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
-});
 app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
 
@@ -56,11 +63,10 @@ app.post("/api/login", async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    // Query Firestore for the user document based on email and password
+    // Query Firestore for the user document based on email
     const userQuery = query(
       collection(db, "users"),
-      where("email", "==", email),
-      where("password", "==", password)
+      where("email", "==", email)
     );
     const querySnapshot = await getDocs(userQuery);
 
@@ -69,8 +75,16 @@ app.post("/api/login", async (req, res) => {
     }
 
     // Assuming there's only one user document that matches the query
-    const userData = querySnapshot.docs[0].data();
-    const { userId, token } = userData;
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
+    const { password: hashedPassword, userId, token } = userData;
+
+    // Verify the password
+    const passwordMatch = await bcrypt.compare(password, hashedPassword);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
 
     // Return success response with user data
     res.status(200).json({ userId, token });
@@ -79,7 +93,36 @@ app.post("/api/login", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+app.post("/api/signup", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
 
+    // Hash the password before saving
+    const saltRounds = 10; // Number of salt rounds
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const userId = email.split("@")[0];
+
+    // Generate Stream token
+    const tokenResponse = await serverClient.createToken(userId);
+
+    // Save user details and token in Firebase Firestore
+    await addDoc(collection(db, "users"), {
+      userId,
+      password: hashedPassword,
+      email,
+      token: tokenResponse,
+    });
+
+    res.status(201).json({ message: "User created successfully" });
+  } catch (error) {
+    console.error("Error during signup:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 // Create meeting endpoint
 app.post("/api/meeting", async (req, res) => {
   const { callId, userId } = req.body;

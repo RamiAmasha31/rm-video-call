@@ -18,7 +18,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import "./CreateMeeting.css";
 const generateCallId = () => `call-${Math.random().toString(36).substr(2, 9)}`;
 
 const MyUILayout = React.memo(
@@ -137,7 +137,11 @@ const MyUILayout = React.memo(
     };
 
     if (callingState !== CallingState.JOINED) {
-      return <div>Loading...</div>;
+      return (
+        <div className="loading-container">
+          <CircularProgress className="loading-icon" />
+        </div>
+      );
     }
 
     return (
@@ -264,7 +268,9 @@ const CreateMeeting = () => {
                 />
               </StreamCall>
             ) : (
-              <div>Loading...</div>
+              <div className="loading-container">
+                <CircularProgress className="loading-icon" />
+              </div>
             )}
           </>
         )}

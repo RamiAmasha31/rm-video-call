@@ -1,0 +1,98 @@
+/* Logs.css */
+.logs-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  margin-bottom: 20px;
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logs-table th,
+.logs-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.logs-table th {
+  background-color: #f9f9f9;
+  color: #333;
+  font-weight: bold;
+}
+
+.logs-table td {
+  background-color: #fff;
+  color: #666;
+}
+
+.logs-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.logs-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.logs-table a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.logs-table a:hover {
+  text-decoration: underline;
+}
+
+.pagination {
+  margin-top: 20px;
+}
+
+.page-button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  margin: 0 5px;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+.title {
+  color: white;
+}
+.page-button.active {
+  background-color: #0056b3;
+}
+
+.page-button:hover {
+  background-color: #0056b3;
+}
+
+.fas.fa-file-pdf {
+  font-size: 16px;
+  color: #d9534f;
+}

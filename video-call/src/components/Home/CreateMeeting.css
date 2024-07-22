@@ -1,0 +1,12 @@
+/* styles.css */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: 646cffaa;
+}
+
+.loading-icon {
+  color: #fff;
+}

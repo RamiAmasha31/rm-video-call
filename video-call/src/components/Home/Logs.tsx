@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useVideoClient } from "../VideoClientContext";
-// import "./Logs.css";
+import "@fortawesome/fontawesome-free/css/all.min.css"; // Import FontAwesome CSS
+import "./Logs.css";
 
 const Logs: React.FC = () => {
   const { user } = useVideoClient(); // Get user from context
@@ -10,7 +11,7 @@ const Logs: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const logsPerPage = 10;
+  const logsPerPage = 3;
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -46,15 +47,15 @@ const Logs: React.FC = () => {
       log.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredLogs(results);
+    setCurrentPage(1); // Reset to first page when search term changes
   }, [searchTerm, logs]);
 
   const indexOfLastLog = currentPage * logsPerPage;
   const indexOfFirstLog = indexOfLastLog - logsPerPage;
   const currentLogs = filteredLogs.slice(indexOfFirstLog, indexOfLastLog);
-  console.log(currentLogs);
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // Reset to first page when search term changes
   };
 
   const handlePageChange = (pageNumber: number) => {
@@ -66,7 +67,7 @@ const Logs: React.FC = () => {
 
   return (
     <div className="logs-container">
-      <h1>Transcription Logs</h1>
+      <h1 className="title">Transcription Logs</h1>
       <input
         type="text"
         placeholder="Search..."
@@ -82,16 +83,29 @@ const Logs: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {currentLogs.map((log, index) => (
-            <tr key={index}>
-              <td>{`Transcription ${index + 1}`}</td>
-              <td>
-                <a href={log} download>
-                  Download
-                </a>
-              </td>
+          {currentLogs.length > 0 ? (
+            currentLogs.map((log, index) => (
+              <tr key={index}>
+                <td>
+                  <i
+                    className="fas fa-file-pdf"
+                    style={{ marginLeft: "8px", color: "#d9534f" }}
+                  ></i>{" "}
+                  Transcription {indexOfFirstLog + index + 1}
+                  {/* PDF Icon */}
+                </td>
+                <td>
+                  <a href={log} download>
+                    Download
+                  </a>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={2}>No logs found</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
       <div className="pagination">
