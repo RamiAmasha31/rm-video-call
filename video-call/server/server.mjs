@@ -1,8 +1,8 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const { initializeApp } = require("firebase/app");
-const {
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import { initializeApp } from "firebase/app";
+import {
   getFirestore,
   collection,
   query,
@@ -12,11 +12,25 @@ const {
   updateDoc,
   doc,
   getDoc,
-} = require("firebase/firestore");
+} from "firebase/firestore";
+import { AssemblyAI } from "assemblyai";
+import PDFDocument from "pdfkit";
+import fs from "fs";
+import path from "path";
+
+const client = new AssemblyAI({
+  apiKey: "1a5a346f633e470e9f016aa179de9fca",
+});
 
 const app = express();
 const port = process.env.PORT || 3002;
+app.use("/files", express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "..", "dist")));
 
+// Serve the React app for all other routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
+});
 app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
 
@@ -69,7 +83,6 @@ app.post("/api/login", async (req, res) => {
 // Create meeting endpoint
 app.post("/api/meeting", async (req, res) => {
   const { callId, userId } = req.body;
-  // console.log("server:", callId, userId);
   try {
     if (!callId || !userId) {
       return res
@@ -93,6 +106,7 @@ app.post("/api/meeting", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 // Add participant to meeting endpoint
 app.post("/api/meeting/add-participant", async (req, res) => {
   const { callId, userId } = req.body;
@@ -164,8 +178,138 @@ app.get("/api/meeting/:callId/participants", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+app.post("/api/recording", async (req, res) => {
+  const { callId, url } = req.body;
+  try {
+    if (!callId || !url) {
+      return res.status(400).json({ error: "Call ID and URL are required" });
+    }
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+    // Parameters for transcription
+    const params = {
+      audio_url: url,
+      speaker_labels: true,
+    };
+
+    // Fetch transcription
+    const { id: transcriptId } = await client.transcripts.create(params);
+
+    // Poll for transcription status until it's completed
+    let transcriptStatus = "queued";
+    let transcriptData;
+    while (transcriptStatus === "queued" || transcriptStatus === "processing") {
+      await new Promise((resolve) => setTimeout(resolve, 5000)); // Polling interval
+      transcriptData = await client.transcripts.get(transcriptId);
+      transcriptStatus = transcriptData.status;
+    }
+
+    if (transcriptStatus === "failed") {
+      return res.status(500).json({ error: "Error transcribing audio" });
+    }
+
+    // Create PDF
+    const pdfDoc = new PDFDocument();
+    const publicDir = path.join(process.cwd(), "public");
+    const pdfPath = path.join(publicDir, `transcription_${callId}.pdf`);
+    pdfDoc.pipe(fs.createWriteStream(pdfPath));
+
+    pdfDoc.fontSize(12).text(`Transcription for Call ID: ${callId}`, {
+      underline: true,
+      align: "center",
+    });
+    pdfDoc.moveDown();
+
+    // Add utterances to PDF
+    for (const utterance of transcriptData.utterances) {
+      pdfDoc
+        .fontSize(10)
+        .text(`Speaker ${utterance.speaker}: ${utterance.text}`, {
+          align: "left",
+        });
+      pdfDoc.moveDown();
+    }
+
+    pdfDoc.end();
+
+    // Get participants for the call
+    const meetingQuery = query(
+      collection(db, "meetings"),
+      where("callId", "==", callId)
+    );
+    const meetingSnapshot = await getDocs(meetingQuery);
+
+    if (meetingSnapshot.empty) {
+      return res.status(404).json({ error: "Meeting not found" });
+    }
+
+    const meetingData = meetingSnapshot.docs[0].data();
+    const participants = meetingData.participants || [];
+
+    // Update each participant's logs field
+    for (const userId of participants) {
+      // Query for the user document
+      const userQuery = query(
+        collection(db, "users"),
+        where("userId", "==", userId)
+      );
+      const userSnapshot = await getDocs(userQuery);
+
+      if (!userSnapshot.empty) {
+        const userDoc = userSnapshot.docs[0];
+        const userData = userDoc.data();
+        const logs = userData.logs || [];
+
+        // Add the transcription file path to the logs
+        logs.push(`/transcription_${callId}.pdf`);
+
+        await updateDoc(userDoc.ref, { logs });
+      } else {
+        console.warn(`User with ID ${userId} does not exist.`);
+      }
+    }
+
+    // Respond with success
+    res
+      .status(201)
+      .json({ success: "Recording data saved successfully", pdfPath });
+  } catch (error) {
+    console.error("Error saving recording data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+// Fetch logs for a specific user ID
+app.get("/api/logs/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // Query the Firestore for the user document
+    const userQuery = query(
+      collection(db, "users"),
+      where("userId", "==", userId)
+    );
+    const querySnapshot = await getDocs(userQuery);
+
+    if (querySnapshot.empty) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Assuming there's only one document with the matching userId
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
+    const logs = userData.logs || [];
+
+    // Respond with the list of log file paths
+    res.status(200).json(logs);
+  } catch (error) {
+    console.error("Error fetching logs:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.listen(process.env.PORT || 3002, () => {
+  console.log(`Server running on port ${process.env.PORT || 3002}`);
 });

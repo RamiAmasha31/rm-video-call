@@ -17,13 +17,12 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import CircularProgress from "@mui/material/CircularProgress";
 
-const generateCallId = () => {
-  return `call-${Math.random().toString(36).substr(2, 9)}`;
-};
+const generateCallId = () => `call-${Math.random().toString(36).substr(2, 9)}`;
 
 const MyUILayout = React.memo(
-  ({ client, call, callId, dialogOpen, onCloseDialog }) => {
+  ({ client, call, callId, dialogOpen, onCloseDialog, onSetLoading }) => {
     const { useCallCallingState } = useCallStateHooks();
     const callingState = useCallCallingState();
     const navigate = useNavigate();
@@ -34,20 +33,17 @@ const MyUILayout = React.memo(
           `http://localhost:3002/api/meeting/${callId}/participants`,
           {
             method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
           }
         );
 
         if (!response.ok) {
-          const errorText = await response.text(); // Get the error message from the server
+          const errorText = await response.text();
           throw new Error(`Failed to fetch participants: ${errorText}`);
         }
 
-        const participants = await response.json(); // Parse the response as JSON
+        const participants = await response.json();
         console.log("Participants:", participants);
-        // You might want to do something with the participants here
       } catch (error) {
         console.error("Error fetching participants:", error);
       }
@@ -57,17 +53,88 @@ const MyUILayout = React.memo(
       if (call) {
         try {
           console.log("Leaving call with ID:", callId);
+          onSetLoading(true); // Set loading to true before processing
+
           // Fetch participants before ending the call
           await fetchParticipants(callId);
 
           // End the call
           await call.endCall();
+
+          // Delay to allow the recording to be available
+          await new Promise((resolve) => setTimeout(resolve, 30000)); // Wait for 30 seconds
+
+          // Fetch and send recordings in the background
+          const fetchAndSendRecordings = async (retries = 3) => {
+            try {
+              const recordingsResponse = await call.queryRecordings();
+              const recordings = recordingsResponse.recordings;
+
+              if (recordings.length > 0) {
+                await Promise.all(
+                  recordings.map(async (recording) => {
+                    const { url } = recording;
+                    // console.log(url);
+                    await sendRecordingDataToServer(callId, url);
+                  })
+                );
+              } else {
+                console.warn("No recordings found.");
+              }
+            } catch (error) {
+              if (retries > 0) {
+                console.warn("Retry fetching recordings in 5 seconds...");
+                await new Promise((resolve) => setTimeout(resolve, 5000)); // Retry after 5 seconds
+                return fetchAndSendRecordings(retries - 1); // Retry
+              } else {
+                console.error(
+                  "Failed to fetch recordings after multiple attempts:",
+                  error
+                );
+              }
+            }
+          };
+
+          // Ensure background task starts after navigation
+          setTimeout(() => {
+            fetchAndSendRecordings();
+          }, 1000); // Delay for navigation
+
           navigate("/home");
         } catch (error) {
           console.error("Error during leaving the call:", error);
+        } finally {
+          onSetLoading(false); // Set loading to false after processing
         }
       }
-    }, [call, callId, navigate]);
+    }, [call, callId, navigate, onSetLoading]);
+
+    const sendRecordingDataToServer = async (callId, url) => {
+      try {
+        console.log(
+          "Sending recording data to server with Call ID:",
+          callId,
+          "and URL:",
+          url
+        );
+        const response = await fetch("http://localhost:3002/api/recording", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ callId, url }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(
+            `Failed to send recording data to server: ${errorText}`
+          );
+        }
+
+        console.log("Recording data sent successfully");
+      } catch (error) {
+        console.error("Error sending recording data:", error);
+      }
+    };
 
     if (callingState !== CallingState.JOINED) {
       return <div>Loading...</div>;
@@ -76,7 +143,7 @@ const MyUILayout = React.memo(
     return (
       <StreamTheme>
         <SpeakerLayout participantsBarPosition="top" />
-        <CallControls onLeave={() => handleLeaveCall()} />
+        <CallControls onLeave={handleLeaveCall} />
         <Dialog open={dialogOpen}>
           <DialogTitle>Meeting ID</DialogTitle>
           <DialogContent>
@@ -85,9 +152,7 @@ const MyUILayout = React.memo(
             </DialogContentText>
             <TextField
               value={callId}
-              InputProps={{
-                readOnly: true,
-              }}
+              InputProps={{ readOnly: true }}
               fullWidth
             />
           </DialogContent>
@@ -106,27 +171,25 @@ const MyUILayout = React.memo(
 );
 
 const CreateMeeting = () => {
-  const { client, user } = useVideoClient(); // Extract user from context
+  const { client, user } = useVideoClient();
   const [call, setCall] = useState(null);
   const [callId, setCallId] = useState(localStorage.getItem("callId") || "");
   const [dialogOpen, setDialogOpen] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const hasInitializedRef = useRef(false);
 
-  // Function to send data to the server
   const sendMeetingDataToServer = useCallback(async (meetingId, userId) => {
     try {
       console.log("Sending meeting data to server with ID:", meetingId);
       const response = await fetch("http://localhost:3002/api/meeting", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ callId: meetingId, userId }), // Ensure the key names match what the server expects
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ callId: meetingId, userId }),
       });
 
       if (!response.ok) {
-        const errorText = await response.text(); // Get the error message from the server
+        const errorText = await response.text();
         throw new Error(`Failed to send meeting data to server: ${errorText}`);
       }
 
@@ -136,7 +199,6 @@ const CreateMeeting = () => {
     }
   }, []);
 
-  // Function to create and join the meeting
   const handleCreateMeeting = useCallback(async () => {
     if (!client || !user) {
       console.error("StreamVideoClient or user is not initialized.");
@@ -154,22 +216,20 @@ const CreateMeeting = () => {
         await newCall.getOrCreate();
         await newCall.join();
         console.log("Call created and joined successfully:", newCall);
-        setCall(newCall); // Update the call state
+        setCall(newCall);
 
         // Send meeting ID and user ID to the server
         await sendMeetingDataToServer(newCallId, user.id);
       } catch (error) {
         console.error("Error creating or joining call:", error);
-        // Handle error (show message, retry, etc.)
       }
     }
   }, [client, call, user, sendMeetingDataToServer]);
 
-  // useEffect to handle meeting creation on component mount
   useEffect(() => {
     if (!hasInitializedRef.current) {
-      handleCreateMeeting(); // Call the function to create and join the meeting
-      hasInitializedRef.current = true; // Set the ref to true to avoid re-running
+      handleCreateMeeting();
+      hasInitializedRef.current = true;
     }
   }, [handleCreateMeeting]);
 
@@ -180,18 +240,33 @@ const CreateMeeting = () => {
   return (
     <div className="create-meeting-page">
       <div className="main-content">
-        {call ? (
-          <StreamCall call={call}>
-            <MyUILayout
-              client={client}
-              call={call}
-              callId={callId}
-              dialogOpen={dialogOpen}
-              onCloseDialog={handleCloseDialog}
-            />
-          </StreamCall>
+        {loading ? (
+          <Dialog open={loading}>
+            <DialogTitle>Processing</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Please wait while processing the meeting data!
+              </DialogContentText>
+              <CircularProgress />
+            </DialogContent>
+          </Dialog>
         ) : (
-          <div>Loading...</div>
+          <>
+            {call ? (
+              <StreamCall call={call}>
+                <MyUILayout
+                  client={client}
+                  call={call}
+                  callId={callId}
+                  dialogOpen={dialogOpen}
+                  onCloseDialog={handleCloseDialog}
+                  onSetLoading={setLoading} // Pass setLoading to MyUILayout
+                />
+              </StreamCall>
+            ) : (
+              <div>Loading...</div>
+            )}
+          </>
         )}
       </div>
     </div>
