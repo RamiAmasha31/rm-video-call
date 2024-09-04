@@ -219,9 +219,12 @@ const CreateMeeting = () => {
         const newCall = client.call(callType, newCallId);
         await newCall.getOrCreate();
         await newCall.join();
+
         console.log("Call created and joined successfully:", newCall);
         setCall(newCall);
-
+        newCall?.startTranscription().catch((err) => {
+          console.error("Failed to start transcription", err);
+        });
         // Send meeting ID and user ID to the server
         await sendMeetingDataToServer(newCallId, user.id);
       } catch (error) {

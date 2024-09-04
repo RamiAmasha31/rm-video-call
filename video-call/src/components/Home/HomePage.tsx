@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import createMeeting from "../../assets/HomePage/workshop.png";
 import joinMeeting from "../../assets/HomePage/join.png";
@@ -7,8 +7,9 @@ import rami from "../../assets/HomePage/rami.jpg";
 import moaed from "../../assets/HomePage/moaed.jpg";
 import ronen from "../../assets/HomePage/social.png";
 import exit from "../../assets/HomePage/exit.png";
+import logo from "../../assets/HomePage/logo.png"; // Import your logo here
 import { useNavigate } from "react-router-dom";
-import "./HomePage.css";
+import "../Home/HomePage.css";
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate(); // Initialize useNavigate hook
@@ -40,8 +41,6 @@ const HomePage: React.FC = () => {
 
   const handleLogout = () => {
     navigate("/");
-    // Implement logout logic here
-    // For example, clear session, localStorage, etc.
   };
 
   return (
@@ -57,6 +56,8 @@ const HomePage: React.FC = () => {
 
       <div className="main-content">
         <section className="brand-section section">
+          <img src={logo} alt="Logo" className="brand-logo" />{" "}
+          {/* Add logo here */}
           <h1 className="brand-typography">RM-VIDEO-CONFERENCE</h1>
         </section>
         <section className="cards-section section">
@@ -99,17 +100,17 @@ const HomePage: React.FC = () => {
           <div className="staff-members">
             <h2>Staff Members</h2>
             <div className="staff-member">
-              <img src={rami} alt="Staff 1" />
+              <img src={rami} alt="Rami Amasha" />
               <h3>Rami Amasha</h3>
               <p>Software Engineer & Applied Mathematics Department</p>
             </div>
             <div className="staff-member">
-              <img src={moaed} alt="Staff 2" />
+              <img src={moaed} alt="Moaed Hamze" />
               <h3>Moaed Hamze</h3>
               <p>Software Engineer Department</p>
             </div>
             <div className="staff-member">
-              <img src={ronen} />
+              <img src={ronen} alt="Ronen Zelber" />
               <h3>Ronen Zelber</h3>
               <p>
                 Project supervisor and Senior Software engineer,
