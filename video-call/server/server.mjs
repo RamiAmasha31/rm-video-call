@@ -233,22 +233,7 @@ app.post("/api/recording", async (req, res) => {
       audio_url: url,
       speaker_labels: true,
     };
-
-    // Fetch transcription
-    const { id: transcriptId } = await client.transcripts.create(params);
-
-    // Poll for transcription status until it's completed
-    let transcriptStatus = "queued";
-    let transcriptData;
-    while (transcriptStatus === "queued" || transcriptStatus === "processing") {
-      await new Promise((resolve) => setTimeout(resolve, 5000)); // Polling interval
-      transcriptData = await client.transcripts.get(transcriptId);
-      transcriptStatus = transcriptData.status;
-    }
-
-    if (transcriptStatus === "failed") {
-      return res.status(500).json({ error: "Error transcribing audio" });
-    }
+    const transcriptData = await client.transcripts.transcribe(params);
 
     // Create PDF
     const pdfDoc = new PDFDocument();
@@ -263,7 +248,7 @@ app.post("/api/recording", async (req, res) => {
     pdfDoc.moveDown();
 
     // Add utterances to PDF
-    for (const utterance of transcriptData.utterances) {
+    for (let utterance of transcriptData.utterances) {
       pdfDoc
         .fontSize(10)
         .text(`Speaker ${utterance.speaker}: ${utterance.text}`, {
