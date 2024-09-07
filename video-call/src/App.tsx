@@ -7,6 +7,7 @@ import CreateMeeting from "./components/Home/CreateMeeting"; // Import the Creat
 import JoinMeeting from "./components/Home/JoinMeeting"; // Import the CreateMeeting component
 import Logs from "./components/Home/Logs"; // Import the Logs component
 import { VideoClientProvider } from "./components/VideoClientContext";
+import logo from "./assets/HomePage/logo.jpg"; // Import your logo here
 
 const App: React.FC = () => {
   return (
@@ -17,9 +18,10 @@ const App: React.FC = () => {
           <Route path="/home" element={<HomePage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/create-meeting" element={<CreateMeeting />} />{" "}
-          <Route path="/join-meeting" element={<JoinMeeting />} />{" "}
-          <Route path="/display-logs" element={<Logs />} />
           {/* Define route for CreateMeeting component */}
+          <Route path="/join-meeting" element={<JoinMeeting />} />{" "}
+          {/* Define route for JoinMeeting component */}
+          <Route path="/display-logs" element={<Logs />} />
         </Routes>
       </Router>
     </VideoClientProvider>

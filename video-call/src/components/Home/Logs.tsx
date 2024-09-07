@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useVideoClient } from "../VideoClientContext";
 import "@fortawesome/fontawesome-free/css/all.min.css"; // Import FontAwesome CSS
 import "./Logs.css";
+import { Link } from "react-router-dom";
+import home from "../../assets/HomePage/home.png";
+import { useNavigate } from "react-router-dom";
 
 const Logs: React.FC = () => {
   const { user } = useVideoClient(); // Get user from context
@@ -12,6 +15,7 @@ const Logs: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const logsPerPage = 3;
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -40,7 +44,10 @@ const Logs: React.FC = () => {
 
     fetchLogs();
   }, [user]);
-
+  const handleLogout = () => {
+    console.log("navigate to home..");
+    navigate("/home");
+  };
   useEffect(() => {
     // Filter logs based on search term
     const results = logs.filter((log) =>
@@ -67,6 +74,14 @@ const Logs: React.FC = () => {
 
   return (
     <div className="logs-container">
+      <Link to="/home" className="exit-button">
+        <img
+          src={home}
+          onClick={handleLogout}
+          alt="Exit"
+          className="exit-icon"
+        />
+      </Link>
       <h1 className="title">Transcription Logs</h1>
       <input
         type="text"

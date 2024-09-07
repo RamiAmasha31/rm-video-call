@@ -12,10 +12,12 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 400px;
+  width: 40vw; /* Increased width for larger screens */
+  max-width: 600px; /* Increased max width */
+  min-width: 300px; /* Kept min width */
   padding: 40px;
   transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.5);
+  background: #b7b7b7;
   box-sizing: border-box;
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
   border-radius: 10px;
@@ -26,6 +28,7 @@ body {
   padding: 0;
   color: #fff;
   text-align: center;
+  font-size: xxx-large; /* Increased font size for large screens */
 }
 
 .login-box .user-box {
@@ -34,8 +37,8 @@ body {
 
 .login-box .user-box input {
   width: 100%;
-  padding: 10px 0;
-  font-size: 16px;
+  padding: 15px 0; /* Increased padding for input fields */
+  font-size: 18px; /* Slightly larger font size */
   color: #fff;
   margin-bottom: 30px;
   border: none;
@@ -49,7 +52,7 @@ body {
   top: 0;
   left: 0;
   padding: 10px 0;
-  font-size: 16px;
+  font-size: 18px; /* Adjusted label font size */
   color: #fff;
   pointer-events: none;
   transition: 0.5s;
@@ -59,16 +62,16 @@ body {
 .login-box .user-box input:valid ~ label {
   top: -20px;
   left: 0;
-  color: #03e9f4;
-  font-size: 12px;
+  color: #000000;
+  font-size: 14px; /* Slightly larger font size when focused */
 }
 
 .login-box form a {
   position: relative;
   display: inline-block;
-  padding: 10px 20px;
-  color: #fff; /* Changed anchor tag color to white */
-  font-size: 16px;
+  padding: 12px 24px;
+  color: #fff;
+  font-size: 18px;
   text-decoration: none;
   text-transform: uppercase;
   overflow: hidden;
@@ -78,18 +81,19 @@ body {
 }
 
 .login-box a {
-  color: #03e9f4; /* Hover color for the anchor tag */
-  text-decoration: none; /* Remove underline on hover */
+  color: #ffffff;
+  text-decoration: none;
 }
+
 .login-box a:hover {
-  color: #03e9f4; /* Hover color for the anchor tag */
-  text-decoration: none; /* Remove underline on hover */
+  color: #f8d0f1;
+  text-decoration: none;
   opacity: 0.5;
 }
 
 .mainContainer {
-  flex-direction: column;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
@@ -98,7 +102,7 @@ body {
 .titleContainer {
   display: flex;
   flex-direction: column;
-  font-size: 64px;
+  font-size: 72px; /* Increased font size for larger screens */
   font-weight: bolder;
   align-items: center;
   justify-content: center;
@@ -106,16 +110,17 @@ body {
 
 .resultContainer,
 .historyItem {
-  flex-direction: row;
   display: flex;
-  width: 400px;
+  flex-direction: row;
+  width: 100%;
+  max-width: 600px; /* Increased width */
   align-items: center;
   justify-content: space-between;
 }
 
 .historyContainer {
-  flex-direction: column;
   display: flex;
+  flex-direction: column;
   height: 200px;
   align-items: center;
   flex-grow: 5;
@@ -144,7 +149,8 @@ body {
 
 .inputBox {
   height: 48px;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   font-size: large;
   border-radius: 8px;
   border: 1px solid grey;
@@ -153,30 +159,76 @@ body {
 
 input[type="button"] {
   border: none;
-  background: #03e9f4;
+  background: #000000;
   color: white;
-  padding: 12px 24px;
+  padding: 14px 28px; /* Increased padding */
   margin: 8px;
-  font-size: 15px;
+  font-size: 16px; /* Slightly larger font size */
   border-radius: 8px;
   cursor: pointer;
 }
 
 .inputButton {
   border: none;
-  background: #03e9f4;
+  background: #000000;
   color: white;
-  padding: 12px 24px;
+  padding: 14px 28px;
   margin-top: 20px;
-  font-size: 16px;
+  font-size: 18px; /* Slightly larger font size */
   border-radius: 5px;
   cursor: pointer;
 }
 
 .inputButton:hover {
-  background: #03c6e9;
+  background: #4a7171;
 }
 
 p {
   color: white;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .login-box {
+    width: 90%;
+    padding: 10px;
+    top: 40%;
+  }
+
+  .titleContainer {
+    font-size: 48px;
+  }
+
+  .inputBox {
+    font-size: medium;
+  }
+
+  input[type="button"],
+  .inputButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-box {
+    width: 90%;
+    padding: 10px;
+    top: 35%;
+    margin: 0 1%; /* Add margin from the sides */
+  }
+
+  .titleContainer {
+    font-size: 36px;
+  }
+
+  .inputBox {
+    font-size: small;
+  }
+
+  input[type="button"],
+  .inputButton {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
 }

@@ -2,10 +2,12 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 400px;
+  width: 40vw; /* Match login width */
+  max-width: 600px; /* Match login max-width */
+  min-width: 300px; /* Match login min-width */
   padding: 40px;
   transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.5);
+  background: #b7b7b7; /* Match login background */
   box-sizing: border-box;
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
   border-radius: 10px;
@@ -16,6 +18,7 @@
   padding: 0;
   color: #fff;
   text-align: center;
+  font-size: xxx-large; /* Match login font size */
 }
 
 .signup-box .user-box {
@@ -24,8 +27,8 @@
 
 .signup-box .user-box input {
   width: 100%;
-  padding: 10px 0;
-  font-size: 16px;
+  padding: 15px 0; /* Match login padding */
+  font-size: 18px; /* Match login font size */
   color: #fff;
   margin-bottom: 30px;
   border: none;
@@ -39,7 +42,7 @@
   top: 0;
   left: 0;
   padding: 10px 0;
-  font-size: 16px;
+  font-size: 18px; /* Match login label font size */
   color: #fff;
   pointer-events: none;
   transition: 0.5s;
@@ -49,8 +52,8 @@
 .signup-box .user-box input:valid ~ label {
   top: -20px;
   left: 0;
-  color: #03e9f4;
-  font-size: 12px;
+  color: #000000; /* Match login color */
+  font-size: 14px; /* Match login font size */
 }
 
 .signup-box .errorLabel {
@@ -61,15 +64,59 @@
 
 .signup-box .inputButton {
   border: none;
-  background: #03e9f4;
+  background: #000000; /* Match login background */
   color: white;
-  padding: 12px 24px;
+  padding: 14px 28px; /* Match login padding */
   margin-top: 20px;
-  font-size: 16px;
+  font-size: 18px; /* Match login font size */
   border-radius: 5px;
   cursor: pointer;
 }
 
 .signup-box .inputButton:hover {
-  background: #03c6e9;
+  background: #4a7171; /* Match login hover color */
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .signup-box {
+    width: 90%;
+    padding: 10px;
+    top: 40%;
+  }
+
+  .signup-box h2 {
+    font-size: 48px;
+  }
+
+  .signup-box .user-box input {
+    font-size: medium;
+  }
+
+  .signup-box .inputButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-box {
+    width: 90%;
+    padding: 10px;
+    top: 35%;
+    margin: 0 1%;
+  }
+
+  .signup-box h2 {
+    font-size: 36px;
+  }
+
+  .signup-box .user-box input {
+    font-size: small;
+  }
+
+  .signup-box .inputButton {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
 }

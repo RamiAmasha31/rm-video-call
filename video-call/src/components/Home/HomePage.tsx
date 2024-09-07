@@ -7,7 +7,7 @@ import rami from "../../assets/HomePage/rami.jpg";
 import moaed from "../../assets/HomePage/moaed.jpg";
 import ronen from "../../assets/HomePage/social.png";
 import exit from "../../assets/HomePage/exit.png";
-import logo from "../../assets/HomePage/logo.png"; // Import your logo here
+import logo from "../../assets/HomePage/logo.jpg"; // Import your logo here
 import { useNavigate } from "react-router-dom";
 import "../Home/HomePage.css";
 
@@ -58,7 +58,7 @@ const HomePage: React.FC = () => {
         <section className="brand-section section">
           <img src={logo} alt="Logo" className="brand-logo" />{" "}
           {/* Add logo here */}
-          <h1 className="brand-typography">RM-VIDEO-CONFERENCE</h1>
+          {/*<h1 className="brand-typography">RM-VIDEO-CONFERENCE</h1>*/}
         </section>
         <section className="cards-section section">
           <div className="cards-container">

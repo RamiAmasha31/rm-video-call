@@ -1,11 +1,16 @@
 .home-page {
-  font-family: "Roboto", "Playfair Display", "Montserrat" "Lora";
-  background-color: #3a3a3a;
+  font-family: "Roboto", "Playfair Display", "Montserrat", "Lora";
+  background-color: #f9f8f6;
+  padding: 0 1rem; /* Add padding for smaller screens */
+}
+
+p {
+  color: black;
 }
 
 .main-content {
   text-align: center;
-  padding: 2rem;
+  padding: 2rem 1rem;
 }
 
 /* Section Styles */
@@ -21,29 +26,31 @@
 }
 
 .brand-section {
-  /* background: #1a202c; */
-  padding: 2rem;
+  padding: 2rem 1rem;
+}
+
+.brand-logo {
+  width: 100%;
+  max-width: 300px; /* Adjust this value based on your preference */
+  height: auto;
 }
 
 .cards-section {
-  /* background: #2d3748; */
-  padding: 2rem;
+  padding: 2rem 1rem;
 }
 
 .about-section {
-  /* background: #4a5568; */
-  padding: 2rem;
+  padding: 2rem 1rem;
 }
 
 .staff-section {
-  /* background: #718096; */
-  padding: 2rem;
+  padding: 2rem 1rem;
 }
 
 .brand-typography {
   font-size: 2.5rem;
   margin-bottom: 2rem;
-  color: white;
+  color: black;
 }
 
 .cards-container {
@@ -51,6 +58,7 @@
   justify-content: center;
   gap: 2rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap; /* Ensure cards wrap on smaller screens */
 }
 
 .card {
@@ -59,8 +67,8 @@
   padding: 1rem;
   width: 200px;
   text-align: center;
-  background: #566583;
-  color: white;
+  background: #b7b7b7;
+  color: black;
   text-decoration: none;
   transition: transform 0.3s;
 }
@@ -68,6 +76,13 @@
 .card:hover {
   transform: scale(1.05);
 }
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
 .exit-icon {
   width: 40px; /* Adjust the size as needed */
   position: absolute;
@@ -77,16 +92,10 @@
   right: 20px;
 }
 
-.card img {
-  width: 100%;
-  height: auto;
-  border-radius: 5px;
-}
-
 .about-us,
 .staff-members {
   margin-bottom: 2rem;
-  color: white;
+  color: black;
 }
 
 .staff-member {
@@ -113,5 +122,25 @@
   .card {
     width: 80%;
     margin-bottom: 1rem;
+  }
+
+  .brand-logo {
+    max-width: 200px; /* Smaller max width for tablets */
+  }
+
+  .exit-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-logo {
+    max-width: 150px; /* Smaller max width for mobile phones */
+  }
+
+  .exit-icon {
+    width: 25px;
+    height: 25px;
   }
 }
