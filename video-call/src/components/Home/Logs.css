@@ -1,26 +1,32 @@
 /* Logs.css */
 .logs-container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 40px auto 20px auto; /* Added top margin for spacing from the top of the page */
   padding: 20px;
   text-align: center;
   font-family: Arial, sans-serif;
+  background: #b7b7b7; /* Match background with login/signup */
+  border-radius: 10px; /* Match border radius */
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6); /* Match box shadow */
 }
 
 h1 {
-  color: #333;
+  color: #fff; /* Match color with login/signup */
   margin-bottom: 20px;
+  font-size: xxx-large; /* Adjust font size if needed */
 }
 
 .search-input {
   margin-bottom: 20px;
-  padding: 10px;
-  font-size: 16px;
+  padding: 15px; /* Match padding with login/signup input */
+  font-size: 18px; /* Match font size with login/signup input */
   width: 100%;
   max-width: 400px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none; /* Remove border for consistency */
+  border-bottom: 1px solid #fff; /* Match border style */
+  outline: none;
+  background: transparent; /* Match background with login/signup input */
+  color: #fff; /* Match text color */
 }
 
 .logs-table {
@@ -28,6 +34,7 @@ h1 {
   border-collapse: collapse;
   margin: 0 auto;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff; /* Set table background to white */
 }
 
 .logs-table th,
@@ -57,7 +64,7 @@ h1 {
 }
 
 .logs-table a {
-  color: #007bff;
+  color: #000000; /* Match link color with login/signup */
   text-decoration: none;
   font-weight: bold;
 }
@@ -71,28 +78,49 @@ h1 {
 }
 
 .page-button {
-  padding: 10px 15px;
+  padding: 14px 28px; /* Match padding with login/signup buttons */
   border: none;
-  background-color: #007bff;
+  background-color: #000000; /* Match button background color */
   color: white;
   cursor: pointer;
   margin: 0 5px;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 18px; /* Match font size with login/signup buttons */
   transition: background-color 0.3s ease;
 }
-.title {
-  color: white;
-}
+
 .page-button.active {
-  background-color: #0056b3;
+  background-color: #4a7171; /* Match active button color */
 }
 
 .page-button:hover {
-  background-color: #0056b3;
+  background-color: #4a7171; /* Match hover button color */
 }
 
 .fas.fa-file-pdf {
   font-size: 16px;
-  color: #d9534f;
+  color: #d9534f; /* Match PDF icon color */
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .search-input {
+    font-size: medium;
+  }
+
+  .page-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-input {
+    font-size: small;
+  }
+
+  .page-button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
 }

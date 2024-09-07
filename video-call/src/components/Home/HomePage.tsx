@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import createMeeting from "../../assets/HomePage/workshop.png";
 import joinMeeting from "../../assets/HomePage/join.png";
@@ -7,37 +7,12 @@ import rami from "../../assets/HomePage/rami.jpg";
 import moaed from "../../assets/HomePage/moaed.jpg";
 import ronen from "../../assets/HomePage/social.png";
 import exit from "../../assets/HomePage/exit.png";
-import logo from "../../assets/HomePage/logo.jpg"; // Import your logo here
+import logo from "../../assets/HomePage/logo.png";
 import { useNavigate } from "react-router-dom";
 import "../Home/HomePage.css";
 
 const HomePage: React.FC = () => {
-  const navigate = useNavigate(); // Initialize useNavigate hook
-
-  useEffect(() => {
-    const sections = document.querySelectorAll(".section");
-
-    const observer = new IntersectionObserver(
-      (entries: IntersectionObserverEntry[]) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("section-in-view");
-          } else {
-            entry.target.classList.remove("section-in-view");
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    sections.forEach((section) => {
-      observer.observe(section);
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     navigate("/");
@@ -55,12 +30,10 @@ const HomePage: React.FC = () => {
       </Link>
 
       <div className="main-content">
-        <section className="brand-section section">
-          <img src={logo} alt="Logo" className="brand-logo" />{" "}
-          {/* Add logo here */}
-          {/*<h1 className="brand-typography">RM-VIDEO-CONFERENCE</h1>*/}
+        <section className="brand-section">
+          <img src={logo} alt="Logo" className="brand-logo" />
         </section>
-        <section className="cards-section section">
+        <section className="cards-section">
           <div className="cards-container">
             <Link to="/create-meeting" className="card">
               <img src={createMeeting} alt="Create Meeting" />
@@ -82,7 +55,7 @@ const HomePage: React.FC = () => {
             </Link>
           </div>
         </section>
-        <section className="about-section section">
+        <section className="about-section">
           <div className="about-us">
             <h2>About Us</h2>
             <p>
@@ -96,7 +69,7 @@ const HomePage: React.FC = () => {
             </p>
           </div>
         </section>
-        <section className="staff-section section">
+        <section className="staff-section">
           <div className="staff-members">
             <h2>Staff Members</h2>
             <div className="staff-member">

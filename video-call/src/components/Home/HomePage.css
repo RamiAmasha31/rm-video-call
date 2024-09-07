@@ -13,25 +13,19 @@ p {
   padding: 2rem 1rem;
 }
 
-/* Section Styles */
+/* Section Styles - Removed animation-related styles */
 .section {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s, transform 0.5s;
-}
-
-.section-in-view {
-  opacity: 1;
-  transform: translateY(0);
+  /* Removed opacity and transform styles */
+  /* Removed transition styles */
 }
 
 .brand-section {
-  padding: 2rem 1rem;
+  /* padding: 2rem 1rem; */
 }
 
 .brand-logo {
   width: 100%;
-  max-width: 300px; /* Adjust this value based on your preference */
+  max-width: 600px; /* Adjust this value based on your preference */
   height: auto;
 }
 

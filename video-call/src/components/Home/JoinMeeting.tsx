@@ -124,6 +124,11 @@ const JoinMeeting = () => {
     }
   };
 
+  const handleCancel = () => {
+    setDialogOpen(false);
+    navigate("/home"); // Navigate to home when canceling
+  };
+
   const handleLogout = () => {
     navigate("/");
     // Implement logout logic here
@@ -142,7 +147,7 @@ const JoinMeeting = () => {
       </Link>
       <div className="main-content">
         {!call ? (
-          <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+          <Dialog open={dialogOpen} onClose={handleCancel}>
             <DialogTitle>Enter Call ID</DialogTitle>
             <DialogContent>
               <DialogContentText>
@@ -161,7 +166,7 @@ const JoinMeeting = () => {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button onClick={handleCancel}>Cancel</Button>
               <Button onClick={handleJoinMeeting}>Join Meeting</Button>
             </DialogActions>
           </Dialog>

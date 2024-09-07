@@ -14,7 +14,7 @@ const Logs: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const logsPerPage = 3;
+  const logsPerPage = 6;
   const navigate = useNavigate(); // Initialize useNavigate hook
 
   useEffect(() => {
