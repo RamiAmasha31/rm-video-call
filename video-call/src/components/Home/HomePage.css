@@ -1,7 +1,36 @@
 .home-page {
   font-family: "Roboto", "Playfair Display", "Montserrat", "Lora";
   background-color: #f9f8f6;
-  padding: 0 1rem; /* Add padding for smaller screens */
+  padding: 0;
+  margin: 0;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #f9f8f6;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo img {
+  height: 5rem; /* Smallest size for mobile screens */
+}
+
+/* Additional elements */
+.exit-icon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
 }
 
 p {
@@ -13,38 +42,10 @@ p {
   padding: 2rem 1rem;
 }
 
-/* Section Styles - Removed animation-related styles */
-.section {
-  /* Removed opacity and transform styles */
-  /* Removed transition styles */
-}
-
-.brand-section {
-  /* padding: 2rem 1rem; */
-}
-
-.brand-logo {
-  width: 100%;
-  max-width: 600px; /* Adjust this value based on your preference */
-  height: auto;
-}
-
-.cards-section {
-  padding: 2rem 1rem;
-}
-
-.about-section {
-  padding: 2rem 1rem;
-}
-
+.cards-section,
+.about-section,
 .staff-section {
   padding: 2rem 1rem;
-}
-
-.brand-typography {
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  color: black;
 }
 
 .cards-container {
@@ -52,7 +53,7 @@ p {
   justify-content: center;
   gap: 2rem;
   margin-bottom: 2rem;
-  flex-wrap: wrap; /* Ensure cards wrap on smaller screens */
+  flex-wrap: wrap;
 }
 
 .card {
@@ -77,15 +78,6 @@ p {
   border-radius: 5px;
 }
 
-.exit-icon {
-  width: 40px; /* Adjust the size as needed */
-  position: absolute;
-  height: 40px;
-  cursor: pointer;
-  top: 20px;
-  right: 20px;
-}
-
 .about-us,
 .staff-members {
   margin-bottom: 2rem;
@@ -107,7 +99,29 @@ p {
 }
 
 /* Media queries for responsiveness */
+@media (min-width: 1200px) {
+  .brand-logo img {
+    height: 5rem; /* Smallest size for mobile screens */
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .brand-logo img {
+    height: 3rem; /* Smallest size for mobile screens */
+  }
+}
+
+@media (max-width: 1024px) {
+  .brand-logo img {
+    height: 3rem; /* Smallest size for mobile screens */
+  }
+}
+
 @media (max-width: 768px) {
+  .brand-logo img {
+    height: 3rem; /* Smallest size for mobile screens */
+  }
+
   .cards-container {
     flex-direction: column;
     align-items: center;
@@ -118,10 +132,6 @@ p {
     margin-bottom: 1rem;
   }
 
-  .brand-logo {
-    max-width: 200px; /* Smaller max width for tablets */
-  }
-
   .exit-icon {
     width: 30px;
     height: 30px;
@@ -129,8 +139,8 @@ p {
 }
 
 @media (max-width: 480px) {
-  .brand-logo {
-    max-width: 150px; /* Smaller max width for mobile phones */
+  .brand-logo img {
+    height: 3rem; /* Smallest size for mobile screens */
   }
 
   .exit-icon {

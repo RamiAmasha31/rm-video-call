@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useVideoClient } from "../VideoClientContext";
 import "@fortawesome/fontawesome-free/css/all.min.css"; // Import FontAwesome CSS
+import logo from "../../assets/HomePage/logo.png";
 import "./Logs.css";
 import { Link } from "react-router-dom";
 import home from "../../assets/HomePage/home.png";
@@ -74,14 +75,17 @@ const Logs: React.FC = () => {
 
   return (
     <div className="logs-container">
-      <Link to="/home" className="exit-button">
+      <nav className="navbar">
+        <div className="brand-logo">
+          <img src={logo} alt="Logo" />
+        </div>
         <img
           src={home}
           onClick={handleLogout}
           alt="Exit"
           className="exit-icon"
         />
-      </Link>
+      </nav>
       <h1 className="title">Transcription Logs</h1>
       <input
         type="text"

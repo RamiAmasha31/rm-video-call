@@ -5,7 +5,7 @@ import joinMeeting from "../../assets/HomePage/join.png";
 import log from "../../assets/HomePage/log.png";
 import rami from "../../assets/HomePage/rami.jpg";
 import moaed from "../../assets/HomePage/moaed.jpg";
-import ronen from "../../assets/HomePage/social.png";
+import ronen from "../../assets/HomePage/ronen.png";
 import exit from "../../assets/HomePage/exit.png";
 import logo from "../../assets/HomePage/logo.png";
 import { useNavigate } from "react-router-dom";
@@ -20,19 +20,19 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="home-page">
-      <Link to="/" className="exit-button">
+      <nav className="navbar">
+        <div className="brand-logo">
+          <img src={logo} alt="Logo" />
+        </div>
         <img
           src={exit}
           onClick={handleLogout}
           alt="Exit"
           className="exit-icon"
         />
-      </Link>
+      </nav>
 
       <div className="main-content">
-        <section className="brand-section">
-          <img src={logo} alt="Logo" className="brand-logo" />
-        </section>
         <section className="cards-section">
           <div className="cards-container">
             <Link to="/create-meeting" className="card">
