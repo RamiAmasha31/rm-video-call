@@ -22,16 +22,16 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { StreamChat } from "stream-chat";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const apiKey = "rgkeykz9gwms";
-const apiSecret =
-  "pdp3t3ctp7y2qnv2syhrxdta6fq2v2nruaadjrqgjync2auwbkrce8bp78a3ym6b";
+const apiKey = process.env.STREAM_API_KEY;
+const apiSecret = process.env.STREAM_API_SECRET;
 const serverClient = StreamChat.getInstance(apiKey, apiSecret);
 
 const client = new AssemblyAI({
-  apiKey: "1a5a346f633e470e9f016aa179de9fca",
+  apiKey: process.env.ASSEMBLYAI_API_KEY,
 });
 
 const app = express();
@@ -42,13 +42,13 @@ app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB599j7kOPQ9mWNHUdx4hh8wdKyI5T-i1A",
-  authDomain: "finalproject-56ffd.firebaseapp.com",
-  projectId: "finalproject-56ffd",
-  storageBucket: "finalproject-56ffd.appspot.com",
-  messagingSenderId: "208463639673",
-  appId: "1:208463639673:web:de2802c7be88673caf50a8",
-  measurementId: "G-HV2K04FDW0",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
@@ -228,116 +228,39 @@ app.post("/api/recording", async (req, res) => {
       return res.status(400).json({ error: "Call ID and URL are required" });
     }
 
-    // Parameters for transcription
-    const params = {
-      audio_url: url,
-      speaker_labels: true,
-    };
-    const transcriptData = await client.transcripts.transcribe(params);
-
-    // Create PDF
-    const pdfDoc = new PDFDocument();
-    const publicDir = path.join(process.cwd(), "public");
-    const pdfPath = path.join(publicDir, `transcription_${callId}.pdf`);
-    pdfDoc.pipe(fs.createWriteStream(pdfPath));
-
-    pdfDoc.fontSize(12).text(`Transcription for Call ID: ${callId}`, {
-      underline: true,
-      align: "center",
-    });
-    pdfDoc.moveDown();
-
-    // Add utterances to PDF
-    for (let utterance of transcriptData.utterances) {
-      pdfDoc
-        .fontSize(10)
-        .text(`Speaker ${utterance.speaker}: ${utterance.text}`, {
-          align: "left",
-        });
-      pdfDoc.moveDown();
-    }
-
-    pdfDoc.end();
-
-    // Get participants for the call
+    // Fetch meeting details
     const meetingQuery = query(
       collection(db, "meetings"),
       where("callId", "==", callId)
     );
-    const meetingSnapshot = await getDocs(meetingQuery);
+    const querySnapshot = await getDocs(meetingQuery);
 
-    if (meetingSnapshot.empty) {
+    if (querySnapshot.empty) {
       return res.status(404).json({ error: "Meeting not found" });
     }
 
-    const meetingData = meetingSnapshot.docs[0].data();
-    const participants = meetingData.participants || [];
+    const meetingDoc = querySnapshot.docs[0];
+    const meetingRef = meetingDoc.ref;
+    const meetingData = meetingDoc.data();
+    const recordings = meetingData.recordings || [];
 
-    // Update each participant's logs field
-    for (const userId of participants) {
-      // Query for the user document
-      const userQuery = query(
-        collection(db, "users"),
-        where("userId", "==", userId)
-      );
-      const userSnapshot = await getDocs(userQuery);
+    // Add new recording
+    recordings.push(url);
+    await updateDoc(meetingRef, { recordings });
 
-      if (!userSnapshot.empty) {
-        const userDoc = userSnapshot.docs[0];
-        const userData = userDoc.data();
-        const logs = userData.logs || [];
-
-        // Add the transcription file path to the logs
-        logs.push(`/transcription_${callId}.pdf`);
-
-        await updateDoc(userDoc.ref, { logs });
-      } else {
-        console.warn(`User with ID ${userId} does not exist.`);
-      }
-    }
-
-    // Respond with success
-    res
-      .status(201)
-      .json({ success: "Recording data saved successfully", pdfPath });
+    res.status(200).json({ success: "Recording added successfully" });
   } catch (error) {
-    console.error("Error saving recording data:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-// Fetch logs for a specific user ID
-app.get("/api/logs/:userId", async (req, res) => {
-  const { userId } = req.params;
-
-  try {
-    if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
-    }
-
-    // Query the Firestore for the user document
-    const userQuery = query(
-      collection(db, "users"),
-      where("userId", "==", userId)
-    );
-    const querySnapshot = await getDocs(userQuery);
-
-    if (querySnapshot.empty) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Assuming there's only one document with the matching userId
-    const userDoc = querySnapshot.docs[0];
-    const userData = userDoc.data();
-    const logs = userData.logs || [];
-
-    // Respond with the list of log file paths
-    res.status(200).json(logs);
-  } catch (error) {
-    console.error("Error fetching logs:", error);
+    console.error("Error adding recording:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-app.listen(process.env.PORT || 3002, () => {
-  console.log(`Server running on port ${process.env.PORT || 3002}`);
+// Serve the index.html file
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });

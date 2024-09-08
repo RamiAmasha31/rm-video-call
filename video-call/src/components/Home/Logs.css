@@ -1,126 +1,116 @@
 /* Logs.css */
+
+/* Base Styles */
 .logs-container {
-  max-width: 1200px;
-  margin: 40px auto 20px auto; /* Added top margin for spacing from the top of the page */
-  padding: 20px;
-  text-align: center;
-  font-family: Arial, sans-serif;
-  background: #b7b7b7; /* Match background with login/signup */
-  border-radius: 10px; /* Match border radius */
-  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6); /* Match box shadow */
+  font-family: "Roboto", "Playfair Display", "Montserrat", "Lora";
+  background-color: #f9f8f6;
+  padding: 0;
+  margin: 0;
 }
 
-h1 {
-  color: #fff; /* Match color with login/signup */
-  margin-bottom: 20px;
-  font-size: xxx-large; /* Adjust font size if needed */
+/* Navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #f9f8f6;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Brand Logo */
+.brand-logo img {
+  height: 3rem; /* Consistent with home-page */
+}
+
+/* Exit Icon */
+.exit-icon {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+/* Main Content */
+.title {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: black;
 }
 
 .search-input {
-  margin-bottom: 20px;
-  padding: 15px; /* Match padding with login/signup input */
-  font-size: 18px; /* Match font size with login/signup input */
-  width: 100%;
-  max-width: 400px;
-  border: none; /* Remove border for consistency */
-  border-bottom: 1px solid #fff; /* Match border style */
-  outline: none;
-  background: transparent; /* Match background with login/signup input */
-  color: #fff; /* Match text color */
+  display: block;
+  margin: 0 auto 2rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 600px;
 }
 
 .logs-table {
-  width: 100%;
-  border-collapse: collapse;
+  width: 80%;
   margin: 0 auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: #fff; /* Set table background to white */
+  border-collapse: collapse;
 }
 
 .logs-table th,
 .logs-table td {
-  padding: 12px 15px;
-  border: 1px solid #ddd;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
   text-align: left;
 }
 
 .logs-table th {
-  background-color: #f9f9f9;
-  color: #333;
-  font-weight: bold;
+  background-color: #f0f0f0;
 }
 
-.logs-table td {
-  background-color: #fff;
-  color: #666;
-}
-
-.logs-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.logs-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.logs-table a {
-  color: #000000; /* Match link color with login/signup */
+.logs-table td a {
+  color: #007bff;
   text-decoration: none;
-  font-weight: bold;
 }
 
-.logs-table a:hover {
+.logs-table td a:hover {
   text-decoration: underline;
 }
 
+/* Pagination */
 .pagination {
-  margin-top: 20px;
+  text-align: center;
+  margin-top: 2rem;
 }
 
 .page-button {
-  padding: 14px 28px; /* Match padding with login/signup buttons */
-  border: none;
-  background-color: #000000; /* Match button background color */
-  color: white;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  background: #f9f8f6;
   cursor: pointer;
-  margin: 0 5px;
-  border-radius: 5px;
-  font-size: 18px; /* Match font size with login/signup buttons */
-  transition: background-color 0.3s ease;
+  margin: 0 0.25rem;
 }
 
 .page-button.active {
-  background-color: #4a7171; /* Match active button color */
+  background: #d9534f;
+  color: white;
 }
 
-.page-button:hover {
-  background-color: #4a7171; /* Match hover button color */
-}
+/* Media Queries for Responsiveness */
+@media (max-width: 1024px) {
+  .brand-logo img {
+    height: 3rem;
+  }
 
-.fas.fa-file-pdf {
-  font-size: 16px;
-  color: #d9534f; /* Match PDF icon color */
-}
+  .exit-icon {
+    width: 25px;
+    height: 25px;
+  }
 
-/* Media queries for responsiveness */
-@media (max-width: 768px) {
   .search-input {
-    font-size: medium;
+    width: 90%;
   }
 
-  .page-button {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .search-input {
-    font-size: small;
-  }
-
-  .page-button {
-    padding: 8px 16px;
-    font-size: 12px;
+  .logs-table {
+    width: 90%;
   }
 }
