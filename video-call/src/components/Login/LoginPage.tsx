@@ -11,7 +11,7 @@ function LoginPage() {
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate(); // Initialize useNavigate hook
   const { setClientDetails } = useVideoClient(); // Destructure setClientDetails from context
-  const server_ip = "rm-video-call.vercel.app";
+  const server_ip = "rm.video.call.vercel.app";
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
