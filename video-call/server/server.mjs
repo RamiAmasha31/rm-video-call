@@ -211,7 +211,7 @@ app.post("/api/meeting/add-participant", async (req, res) => {
 // Fetch participants for a specific call ID
 app.get("/api/meeting/:callId/participants", async (req, res) => {
   const { callId } = req.params;
-
+  console.log("inside the server:", callId);
   try {
     if (!callId) {
       return res.status(400).json({ error: "Call ID is required" });
