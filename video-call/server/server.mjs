@@ -75,6 +75,7 @@ const storage = getStorage(firebaseApp); // Initialize Firebase Storage
 // Login endpoint
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
+  console.log(email, password);
   try {
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
