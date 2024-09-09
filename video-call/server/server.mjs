@@ -15,6 +15,7 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import necessary functions from Firebase Storage
 import { AssemblyAI } from "assemblyai";
 import PDFDocument from "pdfkit";
 import fs from "fs";
@@ -54,6 +55,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp); // Initialize Firebase Storage
 
 // Login endpoint
 app.post("/api/login", async (req, res) => {
@@ -235,11 +237,72 @@ app.post("/api/recording", async (req, res) => {
     };
     const transcriptData = await client.transcripts.transcribe(params);
 
+    // Check if utterances exist and is an array
+    if (!Array.isArray(transcriptData.utterances)) {
+      return res.status(500).json({ error: "Transcript data is invalid" });
+    }
+
     // Create PDF
     const pdfDoc = new PDFDocument();
-    const publicDir = path.join(process.cwd(), "public");
-    const pdfPath = path.join(publicDir, `transcription_${callId}.pdf`);
-    pdfDoc.pipe(fs.createWriteStream(pdfPath));
+    const pdfBuffer = [];
+    pdfDoc.on("data", (chunk) => pdfBuffer.push(chunk));
+    pdfDoc.on("end", async () => {
+      const pdfFile = Buffer.concat(pdfBuffer);
+
+      // Upload PDF to Firebase Storage
+      const storageRef = ref(
+        storage,
+        `transcriptions/transcription_${callId}.pdf`
+      );
+      await uploadBytes(storageRef, pdfFile, {
+        contentType: "application/pdf",
+      });
+
+      // Get download URL
+      const downloadURL = await getDownloadURL(storageRef);
+
+      // Get participants for the call
+      const meetingQuery = query(
+        collection(db, "meetings"),
+        where("callId", "==", callId)
+      );
+      const meetingSnapshot = await getDocs(meetingQuery);
+
+      if (meetingSnapshot.empty) {
+        return res.status(404).json({ error: "Meeting not found" });
+      }
+
+      const meetingData = meetingSnapshot.docs[0].data();
+      const participants = meetingData.participants || [];
+
+      // Update each participant's logs field in Firestore
+      for (const userId of participants) {
+        // Query for the user document
+        const userQuery = query(
+          collection(db, "users"),
+          where("userId", "==", userId)
+        );
+        const userSnapshot = await getDocs(userQuery);
+
+        if (!userSnapshot.empty) {
+          const userDoc = userSnapshot.docs[0];
+          const userData = userDoc.data();
+          const logs = userData.logs || [];
+
+          // Add the download URL to the logs
+          logs.push(downloadURL);
+
+          await updateDoc(userDoc.ref, { logs });
+        } else {
+          console.warn(`User with ID ${userId} does not exist.`);
+        }
+      }
+
+      // Respond with success
+      res
+        .status(201)
+        .json({ success: "Recording data saved successfully", downloadURL });
+    });
 
     pdfDoc.fontSize(12).text(`Transcription for Call ID: ${callId}`, {
       underline: true,
@@ -258,54 +321,12 @@ app.post("/api/recording", async (req, res) => {
     }
 
     pdfDoc.end();
-
-    // Get participants for the call
-    const meetingQuery = query(
-      collection(db, "meetings"),
-      where("callId", "==", callId)
-    );
-    const meetingSnapshot = await getDocs(meetingQuery);
-
-    if (meetingSnapshot.empty) {
-      return res.status(404).json({ error: "Meeting not found" });
-    }
-
-    const meetingData = meetingSnapshot.docs[0].data();
-    const participants = meetingData.participants || [];
-
-    // Update each participant's logs field
-    for (const userId of participants) {
-      // Query for the user document
-      const userQuery = query(
-        collection(db, "users"),
-        where("userId", "==", userId)
-      );
-      const userSnapshot = await getDocs(userQuery);
-
-      if (!userSnapshot.empty) {
-        const userDoc = userSnapshot.docs[0];
-        const userData = userDoc.data();
-        const logs = userData.logs || [];
-
-        // Add the transcription file path to the logs
-        logs.push(`/transcription_${callId}.pdf`);
-
-        await updateDoc(userDoc.ref, { logs });
-      } else {
-        console.warn(`User with ID ${userId} does not exist.`);
-      }
-    }
-
-    // Respond with success
-    res
-      .status(201)
-      .json({ success: "Recording data saved successfully", pdfPath });
   } catch (error) {
     console.error("Error saving recording data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
-// Fetch logs for a specific user ID
+
 app.get("/api/logs/:userId", async (req, res) => {
   const { userId } = req.params;
 
@@ -330,7 +351,7 @@ app.get("/api/logs/:userId", async (req, res) => {
     const userData = userDoc.data();
     const logs = userData.logs || [];
 
-    // Respond with the list of log file paths
+    // Respond with the list of download URLs
     res.status(200).json(logs);
   } catch (error) {
     console.error("Error fetching logs:", error);

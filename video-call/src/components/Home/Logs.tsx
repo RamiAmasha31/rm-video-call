@@ -115,7 +115,7 @@ const Logs: React.FC = () => {
                 </td>
                 <td>
                   <a
-                    href={`http://localhost:3002/${log}`}
+                    href={`${log}`}
                     download
                     target="_blank"
                     rel="noopener noreferrer"
