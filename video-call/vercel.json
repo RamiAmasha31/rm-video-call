@@ -1,7 +1,7 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/**/*.js", "use": "@vercel/node" }, // Handle API routes
+    { "src": "api/**/*.js", "use": "@vercel/node" },
     {
       "src": "package.json",
       "use": "@vercel/static-build",
@@ -9,7 +9,7 @@
     }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" }, // Route API requests
-    { "src": "/(.*)", "dest": "/index.html" } // Route all other requests to index.html
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
