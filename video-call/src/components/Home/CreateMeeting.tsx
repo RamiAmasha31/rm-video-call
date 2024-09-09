@@ -40,7 +40,7 @@ const MyUILayout = React.memo<MyUILayoutProps>(
     const fetchParticipants = async (callId: any) => {
       try {
         const response = await fetch(
-          `http://${server_ip}/api/meeting/${callId}/participants`,
+          `https://${server_ip}/api/meeting/${callId}/participants`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -127,7 +127,7 @@ const MyUILayout = React.memo<MyUILayoutProps>(
           "and URL:",
           url
         );
-        const response = await fetch(`http://${server_ip}/api/recording`, {
+        const response = await fetch(`https://${server_ip}/api/recording`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ callId, url }),
@@ -196,7 +196,7 @@ const CreateMeeting = () => {
     async (meetingId: any, userId: any) => {
       try {
         console.log("Sending meeting data to server with ID:", meetingId);
-        const response = await fetch(`http://${server_ip}/api/meeting`, {
+        const response = await fetch(`https://${server_ip}/api/meeting`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ callId: meetingId, userId }),

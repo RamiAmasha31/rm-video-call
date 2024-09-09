@@ -46,7 +46,7 @@ const JoinMeeting = () => {
   const sendParticipantDataToServer = async (callId: any, userId: any) => {
     try {
       const response = await fetch(
-        `http://${server_ip}/api/meeting/add-participant`,
+        `https://${server_ip}/api/meeting/add-participant`,
         {
           method: "POST",
           headers: {
