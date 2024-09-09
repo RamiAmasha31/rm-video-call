@@ -1,4 +1,11 @@
 {
+  "routes": [
+    {
+      "headers": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
