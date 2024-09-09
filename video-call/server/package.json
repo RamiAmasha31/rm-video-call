@@ -15,7 +15,7 @@
     "@firebase/storage": "^0.13.1",
     "@google-cloud/storage": "^7.12.1",
     "assemblyai": "^4.6.1",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
