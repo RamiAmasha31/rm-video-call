@@ -39,6 +39,7 @@ const MyUILayout = React.memo<MyUILayoutProps>(
 
     const fetchParticipants = async (callId: any) => {
       try {
+        console.log(callId);
         const response = await fetch(
           `https://${server_ip}/api/meeting/${callId}/participants`,
           {
