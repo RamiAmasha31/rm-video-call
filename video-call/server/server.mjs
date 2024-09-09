@@ -95,7 +95,7 @@ app.post("/api/login", async (req, res) => {
     const userDoc = querySnapshot.docs[0];
     const userData = userDoc.data();
     const { password: hashedPassword, userId, token } = userData;
-
+    console.log(userData);
     // Verify the password
     const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
