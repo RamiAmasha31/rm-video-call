@@ -1,29 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/(.*)",
       "destination": "/server/server.mjs"
     },
     {
       "source": "/(.*)",
       "destination": "/index.html"
-    }
-  ],
-  "version": 2,
-  "builds": [
-    {
-      "src": "server/server.mjs",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server/server.mjs",
-      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*"
-      }
     }
   ]
 }
