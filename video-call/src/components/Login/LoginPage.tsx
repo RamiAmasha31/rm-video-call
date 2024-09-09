@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useVideoClient } from "../VideoClientContext"; // Import the useVideoClient hook
 
@@ -11,8 +11,9 @@ function LoginPage() {
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate(); // Initialize useNavigate hook
   const { setClientDetails } = useVideoClient(); // Destructure setClientDetails from context
+  const server_ip = "rm-video-call.vercel.app";
 
-  const handleFormSubmit = async (event) => {
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
@@ -28,7 +29,7 @@ function LoginPage() {
       }
 
       // Make POST request to server endpoint using Fetch API
-      const response = await fetch("http://localhost:3002/api/login", {
+      const response = await fetch(`http://${server_ip}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

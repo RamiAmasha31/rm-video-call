@@ -10,6 +10,7 @@ const SignupPage: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
   const navigate = useNavigate();
+  const server_ip = "rm-video-call.vercel.app";
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +34,7 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3002/api/signup", {
+      const response = await fetch(`http://${server_ip}/api/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

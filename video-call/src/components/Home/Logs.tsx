@@ -3,7 +3,6 @@ import { useVideoClient } from "../VideoClientContext";
 import "@fortawesome/fontawesome-free/css/all.min.css"; // Import FontAwesome CSS
 import logo from "../../assets/HomePage/logo.png";
 import "./Logs.css";
-import { Link } from "react-router-dom";
 import home from "../../assets/HomePage/home.png";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +16,7 @@ const Logs: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const logsPerPage = 6;
   const navigate = useNavigate(); // Initialize useNavigate hook
-
+  const server_ip = "rm-video-call.vercel.app";
   useEffect(() => {
     const fetchLogs = async () => {
       if (!user) {
@@ -27,9 +26,7 @@ const Logs: React.FC = () => {
       }
 
       try {
-        const response = await fetch(
-          `http://localhost:3002/api/logs/${user.id}`
-        );
+        const response = await fetch(`http://${server_ip}/api/logs/${user.id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch logs");
         }

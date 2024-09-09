@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useVideoClient } from "../VideoClientContext";
 import {
@@ -21,9 +21,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-
-// Custom CallControls component without RecordCallButton
-const CallControls = ({ onLeave }) => (
+interface CallControlsProps {
+  onLeave: () => void;
+}
+const CallControls: React.FC<CallControlsProps> = ({ onLeave }) => (
   <div className="str-video__call-controls">
     <ToggleAudioPublishingButton />
     <ToggleVideoPublishingButton />
@@ -33,17 +34,19 @@ const CallControls = ({ onLeave }) => (
 );
 
 const JoinMeeting = () => {
+  const server_ip = "rm-video-call.vercel.app";
+
   const navigate = useNavigate();
   const { client, user } = useVideoClient(); // Extract user from context
   const [callId, setCallId] = useState("");
-  const [call, setCall] = useState(null);
+  const [call, setCall] = useState<any | null>(null);
   const [dialogOpen, setDialogOpen] = useState(true);
 
   // Function to send participant data to the server
-  const sendParticipantDataToServer = async (callId, userId) => {
+  const sendParticipantDataToServer = async (callId: any, userId: any) => {
     try {
       const response = await fetch(
-        "http://localhost:3002/api/meeting/add-participant",
+        `http://${server_ip}/api/meeting/add-participant`,
         {
           method: "POST",
           headers: {
@@ -172,7 +175,7 @@ const JoinMeeting = () => {
           </Dialog>
         ) : (
           <StreamCall call={call}>
-            <JoinedMeetingUI call={call} />
+            <JoinedMeetingUI />
           </StreamCall>
         )}
       </div>
@@ -180,7 +183,7 @@ const JoinMeeting = () => {
   );
 };
 
-const JoinedMeetingUI = ({ call }) => {
+const JoinedMeetingUI = () => {
   const navigate = useNavigate();
 
   const handleLeaveCall = () => {

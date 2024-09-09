@@ -19,19 +19,28 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import "./CreateMeeting.css";
-
+// import { Call } from "stream-chat";
+const server_ip = "rm-video-call.vercel.app";
 const generateCallId = () => `call-${Math.random().toString(36).substr(2, 9)}`;
+// Define props type for MyUILayout component
+interface MyUILayoutProps {
+  call: any; // Replace `any` with the appropriate type if known
+  callId: string;
+  dialogOpen: boolean;
+  onCloseDialog: () => void;
+  onSetLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-const MyUILayout = React.memo(
-  ({ client, call, callId, dialogOpen, onCloseDialog, onSetLoading }) => {
+const MyUILayout = React.memo<MyUILayoutProps>(
+  ({ call, callId, dialogOpen, onCloseDialog, onSetLoading }) => {
     const { useCallCallingState } = useCallStateHooks();
     const callingState = useCallCallingState();
     const navigate = useNavigate();
 
-    const fetchParticipants = async (callId) => {
+    const fetchParticipants = async (callId: any) => {
       try {
         const response = await fetch(
-          `http://localhost:3002/api/meeting/${callId}/participants`,
+          `http://${server_ip}/api/meeting/${callId}/participants`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -73,7 +82,7 @@ const MyUILayout = React.memo(
 
               if (recordings.length > 0) {
                 await Promise.all(
-                  recordings.map(async (recording) => {
+                  recordings.map(async (recording: any) => {
                     const { url } = recording;
                     // console.log(url);
                     await sendRecordingDataToServer(callId, url);
@@ -110,7 +119,7 @@ const MyUILayout = React.memo(
       }
     }, [call, callId, navigate, onSetLoading]);
 
-    const sendRecordingDataToServer = async (callId, url) => {
+    const sendRecordingDataToServer = async (callId: any, url: any) => {
       try {
         console.log(
           "Sending recording data to server with Call ID:",
@@ -118,7 +127,7 @@ const MyUILayout = React.memo(
           "and URL:",
           url
         );
-        const response = await fetch("http://localhost:3002/api/recording", {
+        const response = await fetch(`http://${server_ip}/api/recording`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ callId, url }),
@@ -176,32 +185,37 @@ const MyUILayout = React.memo(
 );
 const CreateMeeting = () => {
   const { client, user } = useVideoClient();
-  const [call, setCall] = useState(null);
+  const [call, setCall] = useState<any | null>(null);
   const [callId, setCallId] = useState(sessionStorage.getItem("callId") || "");
   const [dialogOpen, setDialogOpen] = useState(true);
   const [loading, setLoading] = useState(true); // Start with loading state
 
   const hasInitializedRef = useRef(false);
 
-  const sendMeetingDataToServer = useCallback(async (meetingId, userId) => {
-    try {
-      console.log("Sending meeting data to server with ID:", meetingId);
-      const response = await fetch("http://localhost:3002/api/meeting", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ callId: meetingId, userId }),
-      });
+  const sendMeetingDataToServer = useCallback(
+    async (meetingId: any, userId: any) => {
+      try {
+        console.log("Sending meeting data to server with ID:", meetingId);
+        const response = await fetch(`http://${server_ip}/api/meeting`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ callId: meetingId, userId }),
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to send meeting data to server: ${errorText}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(
+            `Failed to send meeting data to server: ${errorText}`
+          );
+        }
+
+        console.log("Meeting data sent successfully");
+      } catch (error) {
+        console.error("Error sending meeting data:", error);
       }
-
-      console.log("Meeting data sent successfully");
-    } catch (error) {
-      console.error("Error sending meeting data:", error);
-    }
-  }, []);
+    },
+    []
+  );
 
   const handleCreateMeeting = useCallback(async () => {
     if (!client || !user) {
@@ -221,7 +235,7 @@ const CreateMeeting = () => {
         await newCall.join();
 
         console.log("Call created and joined successfully:", newCall);
-        setCall(newCall);
+        setCall(newCall as any);
         newCall?.startTranscription().catch((err) => {
           console.error("Failed to start transcription", err);
         });
@@ -278,7 +292,6 @@ const CreateMeeting = () => {
             {call ? (
               <StreamCall call={call}>
                 <MyUILayout
-                  client={client}
                   call={call}
                   callId={callId}
                   dialogOpen={dialogOpen}

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
 import { StreamVideoClient, User } from "@stream-io/video-react-sdk";
 
 interface VideoClientContextType {
@@ -7,15 +13,25 @@ interface VideoClientContextType {
   setClientDetails: (userId: string, token: string) => void;
 }
 
-const VideoClientContext = createContext<VideoClientContextType>({
-  client: null,
-  user: null,
-  setClientDetails: () => {},
-});
+const VideoClientContext = createContext<VideoClientContextType | undefined>(
+  undefined
+);
 
-export const useVideoClient = () => useContext(VideoClientContext);
+export const useVideoClient = () => {
+  const context = useContext(VideoClientContext);
+  if (context === undefined) {
+    throw new Error("useVideoClient must be used within a VideoClientProvider");
+  }
+  return context;
+};
 
-export const VideoClientProvider: React.FC = ({ children }) => {
+interface VideoClientProviderProps {
+  children: ReactNode;
+}
+
+export const VideoClientProvider: React.FC<VideoClientProviderProps> = ({
+  children,
+}) => {
   const [client, setClient] = useState<StreamVideoClient | null>(null);
   const [user, setUser] = useState<User | null>(null);
 

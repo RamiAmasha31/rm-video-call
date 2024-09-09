@@ -7,7 +7,6 @@ import CreateMeeting from "./components/Home/CreateMeeting"; // Import the Creat
 import JoinMeeting from "./components/Home/JoinMeeting"; // Import the CreateMeeting component
 import Logs from "./components/Home/Logs"; // Import the Logs component
 import { VideoClientProvider } from "./components/VideoClientContext";
-import logo from "./assets/HomePage/logo.jpg"; // Import your logo here
 
 const App: React.FC = () => {
   return (
