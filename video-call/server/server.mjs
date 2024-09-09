@@ -46,14 +46,7 @@ const app = express();
 const port = process.env.PORT || 3002;
 app.use(express.static(path.join(__dirname, "../dist")));
 
-// Configure CORS
-const corsOptions = {
-  origin: "https://rmvideocall-h50p99pdz-rami-amashas-projects.vercel.app",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"],
-};
-app.use(cors(corsOptions)); // Enable CORS for specified origin
-
+app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
 
 // Firebase configuration
