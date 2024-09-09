@@ -23,16 +23,23 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { StreamChat } from "stream-chat";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const apiKey = "rgkeykz9gwms";
-const apiSecret =
-  "pdp3t3ctp7y2qnv2syhrxdta6fq2v2nruaadjrqgjync2auwbkrce8bp78a3ym6b";
-const serverClient = StreamChat.getInstance(apiKey, apiSecret);
-
+// Initialize StreamChat
+const serverClient = StreamChat.getInstance(
+  process.env.STREAM_API_KEY,
+  process.env.STREAM_API_SECRET
+);
+// console.log(process.env.FIREBASE_API_KEY);
+// Initialize AssemblyAI
 const client = new AssemblyAI({
-  apiKey: "1a5a346f633e470e9f016aa179de9fca",
+  apiKey: process.env.ASSEMBLYAI_API_KEY,
 });
 
 const app = express();
@@ -42,14 +49,15 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
 
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyB599j7kOPQ9mWNHUdx4hh8wdKyI5T-i1A",
-  authDomain: "finalproject-56ffd.firebaseapp.com",
-  projectId: "finalproject-56ffd",
-  storageBucket: "finalproject-56ffd.appspot.com",
-  messagingSenderId: "208463639673",
-  appId: "1:208463639673:web:de2802c7be88673caf50a8",
-  measurementId: "G-HV2K04FDW0",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
