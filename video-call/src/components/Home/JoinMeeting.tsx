@@ -34,7 +34,7 @@ const CallControls: React.FC<CallControlsProps> = ({ onLeave }) => (
 );
 
 const JoinMeeting = () => {
-  const server_ip = "rm.video.call.vercel.app";
+  const server_ip = "rmvideocall.vercel.app";
 
   const navigate = useNavigate();
   const { client, user } = useVideoClient(); // Extract user from context

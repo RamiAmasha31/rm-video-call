@@ -10,7 +10,7 @@ const SignupPage: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
   const navigate = useNavigate();
-  const server_ip = "rm.video.call.vercel.app";
+  const server_ip = "rmvideocall.vercel.app";
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -20,7 +20,7 @@ import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import "./CreateMeeting.css";
 // import { Call } from "stream-chat";
-const server_ip = "rm.video.call.vercel.app";
+const server_ip = "rmvideocall.vercel.app";
 const generateCallId = () => `call-${Math.random().toString(36).substr(2, 9)}`;
 // Define props type for MyUILayout component
 interface MyUILayoutProps {

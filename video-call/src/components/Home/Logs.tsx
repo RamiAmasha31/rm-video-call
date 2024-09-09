@@ -16,7 +16,7 @@ const Logs: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const logsPerPage = 6;
   const navigate = useNavigate(); // Initialize useNavigate hook
-  const server_ip = "rm.video.call.vercel.app";
+  const server_ip = "rmvideocall.vercel.app";
   useEffect(() => {
     const fetchLogs = async () => {
       if (!user) {
