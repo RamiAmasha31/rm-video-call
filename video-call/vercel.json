@@ -1,11 +1,12 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "dist/**/*", "use": "@vercel/static-build" },
-    { "src": "server/server.mjs", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/server/server.mjs" },
-    { "src": "/(.*)", "dest": "/dist/$1" }
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/server/server.mjs"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
