@@ -29,7 +29,7 @@ function LoginPage() {
       }
 
       // Make POST request to server endpoint using Fetch API
-      const response = await fetch(`http://${server_ip}/api/login`, {
+      const response = await fetch(`https://${server_ip}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
