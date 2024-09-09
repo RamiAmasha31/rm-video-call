@@ -46,13 +46,14 @@ const app = express();
 const port = process.env.PORT || 3002;
 app.use(express.static(path.join(__dirname, "../dist")));
 
-// Custom CORS middleware
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*"); // Or '*'
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
+// Configure CORS
+app.use(
+  cors({
+    origin: "*", // Allow all origins, or specify the domain if you want to restrict
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
 
 // Firebase configuration
