@@ -26,7 +26,7 @@ const Logs: React.FC = () => {
       }
 
       try {
-        // console.log(user.id);
+        console.log(user.id);
         const response = await fetch(
           `https://${server_ip}/api/logs`, // Adjusted endpoint
           {
