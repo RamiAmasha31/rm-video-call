@@ -27,7 +27,7 @@ const Logs: React.FC = () => {
 
       try {
         const response = await fetch(
-          `https://${server_ip}/api/logs?userId=${user.id}`, // Ensure the user ID is properly encoded
+          `https://${server_ip}/api/logs?userId=${user.id}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -39,7 +39,7 @@ const Logs: React.FC = () => {
             `Failed to fetch logs: ${response.status} - ${response.statusText}\n${errorText}`
           );
           throw new Error(
-            `Failed to fetch logs: ${response.status} - ${response.statusText}`
+            `Failed to fetch logs: ${response.status} - ${response.statusText}\n${errorText}`
           );
         }
         const data = await response.json();
@@ -47,7 +47,7 @@ const Logs: React.FC = () => {
         setFilteredLogs(data);
       } catch (err: any) {
         console.error("Error fetching logs:", err.message);
-        setError("Failed to fetch logs");
+        setError(`Failed to fetch logs: ${err.message}`);
       } finally {
         setLoading(false);
       }
