@@ -48,7 +48,7 @@ const HomePage: React.FC = () => {
               <h3>Join Meeting</h3>
               <p>Join an active meeting by only entering its ID.</p>
             </Link>
-            <Link to="/display-logs" className="card">
+            <Link to="/logs" className="card">
               <img src={log} alt="Display Logs" />
               <h3>Display Logs</h3>
               <p>Display your transcription files of previous meetings!</p>
