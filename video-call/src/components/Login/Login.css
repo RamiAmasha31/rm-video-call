@@ -86,8 +86,8 @@ body {
 }
 
 .login-box a:hover {
-  color: #b7b7b7;
   text-decoration: none;
+  color: #b7b7b7;
   opacity: 0.5;
 }
 
