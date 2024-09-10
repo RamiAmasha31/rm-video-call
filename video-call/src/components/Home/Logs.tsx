@@ -27,7 +27,7 @@ const Logs: React.FC = () => {
 
       try {
         const response = await fetch(
-          `https://${server_ip}/api/logs?userId=${user.id}`,
+          `https://${server_ip}/api/fetchlogs?userId=${user.id}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },

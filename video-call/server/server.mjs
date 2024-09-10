@@ -340,7 +340,7 @@ app.post("/api/recording", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-app.get("/api/logs", async (req, res) => {
+app.get("/api/fetchlogs", async (req, res) => {
   console.log("Received query parameters:", req.query);
 
   const { userId } = req.query;
