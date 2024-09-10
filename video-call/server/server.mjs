@@ -342,7 +342,7 @@ app.post("/api/recording", async (req, res) => {
 });
 
 app.get("/api/logs", async (req, res) => {
-  const { userId } = req.query; // Adjusted to use query parameters
+  const { userId } = req.query;
 
   try {
     if (!userId) {
@@ -368,7 +368,7 @@ app.get("/api/logs", async (req, res) => {
     // Respond with the list of logs
     res.status(200).json(logs);
   } catch (error) {
-    console.error("Error fetching logs:", error);
+    console.error("Error fetching logs:", error.message, error.stack);
     res.status(500).json({ error: "Internal server error" });
   }
 });
