@@ -1,6 +1,18 @@
+// api/recording.js
+
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import PDFDocument from "pdfkit";
 import dotenv from "dotenv";
+import { AssemblyAI } from "assemblyai";
 
 dotenv.config();
 
@@ -16,26 +28,111 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
-
+const storage = getStorage(firebaseApp);
+// Initialize AssemblyAI
+const client = new AssemblyAI({
+  apiKey: process.env.ASSEMBLYAI_API_KEY,
+});
 export default async function handler(req, res) {
-  const { callId, recordingUrl } = req.body;
-
+  const { callId, url } = req.body;
   try {
-    if (!callId || !recordingUrl) {
-      return res
-        .status(400)
-        .json({ error: "Call ID and Recording URL are required" });
+    if (!callId || !url) {
+      return res.status(400).json({ error: "Call ID and URL are required" });
     }
 
-    await addDoc(collection(db, "recordings"), {
-      callId,
-      recordingUrl,
-      createdAt: new Date().toISOString(),
+    // Parameters for transcription
+    const params = {
+      audio_url: url,
+      speaker_labels: true,
+    };
+    const transcriptData = await client.transcripts.transcribe(params);
+
+    // Check if utterances exist and is an array
+    if (!Array.isArray(transcriptData.utterances)) {
+      return res.status(500).json({ error: "Transcript data is invalid" });
+    }
+
+    // Create PDF
+    const pdfDoc = new PDFDocument();
+    const pdfBuffer = [];
+    pdfDoc.on("data", (chunk) => pdfBuffer.push(chunk));
+    pdfDoc.on("end", async () => {
+      const pdfFile = Buffer.concat(pdfBuffer);
+
+      // Upload PDF to Firebase Storage
+      const storageRef = ref(
+        storage,
+        `transcriptions/transcription_${callId}.pdf`
+      );
+      await uploadBytes(storageRef, pdfFile, {
+        contentType: "application/pdf",
+      });
+
+      // Get download URL
+      const downloadURL = await getDownloadURL(storageRef);
+
+      // Get participants for the call
+      const meetingQuery = query(
+        collection(db, "meetings"),
+        where("callId", "==", callId)
+      );
+      const meetingSnapshot = await getDocs(meetingQuery);
+
+      if (meetingSnapshot.empty) {
+        return res.status(404).json({ error: "Meeting not found" });
+      }
+
+      const meetingData = meetingSnapshot.docs[0].data();
+      const participants = meetingData.participants || [];
+
+      // Update each participant's logs field in Firestore
+      for (const userId of participants) {
+        // Query for the user document
+        const userQuery = query(
+          collection(db, "users"),
+          where("userId", "==", userId)
+        );
+        const userSnapshot = await getDocs(userQuery);
+
+        if (!userSnapshot.empty) {
+          const userDoc = userSnapshot.docs[0];
+          const userData = userDoc.data();
+          const logs = userData.logs || [];
+
+          // Add the download URL to the logs
+          logs.push(downloadURL);
+
+          await updateDoc(userDoc.ref, { logs });
+        } else {
+          console.warn(`User with ID ${userId} does not exist.`);
+        }
+      }
+
+      // Respond with success
+      res
+        .status(201)
+        .json({ success: "Recording data saved successfully", downloadURL });
     });
 
-    res.status(201).json({ message: "Recording added successfully" });
+    pdfDoc.fontSize(12).text(`Transcription for Call ID: ${callId}`, {
+      underline: true,
+      align: "center",
+    });
+    pdfDoc.moveDown();
+
+    // Add utterances to PDF
+    for (let utterance of transcriptData.utterances) {
+      pdfDoc
+        .fontSize(10)
+        .text(`Speaker ${utterance.speaker}: ${utterance.text}`, {
+          align: "left",
+        });
+      pdfDoc.moveDown();
+    }
+
+    pdfDoc.end();
   } catch (error) {
-    console.error("Error adding recording:", error);
+    console.error("Error saving recording data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
