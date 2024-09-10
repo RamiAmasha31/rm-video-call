@@ -344,7 +344,7 @@ app.post("/api/recording", async (req, res) => {
 app.get("/api/logs", async (req, res) => {
   console.log("from server api/logs", userId);
 
-  const { userId } = req.body;
+  const { userId } = req.query;
   try {
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
