@@ -27,23 +27,26 @@ const Logs: React.FC = () => {
 
       try {
         const response = await fetch(
-          `https://${server_ip}/api/logs?userId=${user.id}`, // Use query parameter
+          `https://${server_ip}/api/logs?userId=${user.id}`, // Ensure the user ID is properly encoded
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
           }
         );
         if (!response.ok) {
-          // Extract and log detailed error information from the response
           const errorText = await response.text();
-          throw new Error(
+          console.error(
             `Failed to fetch logs: ${response.status} - ${response.statusText}\n${errorText}`
+          );
+          throw new Error(
+            `Failed to fetch logs: ${response.status} - ${response.statusText}`
           );
         }
         const data = await response.json();
         setLogs(data);
         setFilteredLogs(data);
-      } catch (err) {
+      } catch (err: any) {
+        console.error("Error fetching logs:", err.message);
         setError("Failed to fetch logs");
       } finally {
         setLoading(false);
