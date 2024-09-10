@@ -27,7 +27,11 @@ const Logs: React.FC = () => {
 
       try {
         const response = await fetch(
-          `https://${server_ip}/api/logs?userId=${user.id}` // Adjusted endpoint to use query parameters
+          `https://${server_ip}/api/logs?userId=${user.id}`, // Adjusted endpoint
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
         );
         if (!response.ok) {
           throw new Error("Failed to fetch logs");
