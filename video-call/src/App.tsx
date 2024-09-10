@@ -17,9 +17,7 @@ const App: React.FC = () => {
           <Route path="/home" element={<HomePage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/create-meeting" element={<CreateMeeting />} />{" "}
-          {/* Define route for CreateMeeting component */}
           <Route path="/join-meeting" element={<JoinMeeting />} />{" "}
-          {/* Define route for JoinMeeting component */}
           <Route path="/logs" element={<Logs />} />{" "}
         </Routes>
       </Router>
