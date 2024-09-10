@@ -46,7 +46,7 @@ const SignupPage: React.FC = () => {
         throw new Error("Signup failed");
       }
 
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       console.error("Error during signup:", error);
       setEmailError("Signup failed, please try again");
