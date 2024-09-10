@@ -341,7 +341,7 @@ app.post("/api/recording", async (req, res) => {
   }
 });
 
-app.get("/api/display-logs", async (req, res) => {
+app.get("/api/logs", async (req, res) => {
   console.log("from server api/logs", userId);
 
   const { userId } = req.body;

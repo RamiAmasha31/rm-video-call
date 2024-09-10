@@ -20,7 +20,7 @@ const App: React.FC = () => {
           {/* Define route for CreateMeeting component */}
           <Route path="/join-meeting" element={<JoinMeeting />} />{" "}
           {/* Define route for JoinMeeting component */}
-          <Route path="/display-logs" element={<Logs />} />
+          <Route path="/logs" element={<Logs />} />
         </Routes>
       </Router>
     </VideoClientProvider>
