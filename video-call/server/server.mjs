@@ -342,7 +342,7 @@ app.post("/api/recording", async (req, res) => {
 });
 
 app.get("/api/logs", async (req, res) => {
-  console.log("from server api/logs", userId);
+  console.log("from server api/logs", req.query);
 
   const { userId } = req.query;
   try {
