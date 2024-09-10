@@ -341,8 +341,8 @@ app.post("/api/recording", async (req, res) => {
   }
 });
 
-app.get("/api/logs/:userId", async (req, res) => {
-  const { userId } = req.params;
+app.get("/api/logs", async (req, res) => {
+  const { userId } = req.query; // Adjusted to use query parameters
 
   try {
     if (!userId) {
@@ -365,7 +365,7 @@ app.get("/api/logs/:userId", async (req, res) => {
     const userData = userDoc.data();
     const logs = userData.logs || [];
 
-    // Respond with the list of download URLs
+    // Respond with the list of logs
     res.status(200).json(logs);
   } catch (error) {
     console.error("Error fetching logs:", error);
