@@ -28,10 +28,11 @@ const Logs: React.FC = () => {
       try {
         // console.log(user.id);
         const response = await fetch(
-          `https://${server_ip}/api/logs?userId=${user.id}`, // Adjusted endpoint
+          `https://${server_ip}/api/logs`, // Adjusted endpoint
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: user.id }),
           }
         );
         if (!response.ok) {
