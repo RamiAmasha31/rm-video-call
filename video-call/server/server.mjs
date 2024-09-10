@@ -56,7 +56,7 @@ app.use(
 );
 // Use body-parser middleware
 app.use(bodyParser.json()); // For parsing application/json
-// app.use(bodyParser.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
 // Firebase configuration
 const firebaseConfig = {
