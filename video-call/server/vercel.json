@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "server.mjs",
+      "src": "server/server.mjs",
       "use": "@vercel/node"
     },
     {
@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server.mjs",
+      "dest": "/server/server.mjs",
       "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*"
@@ -21,7 +21,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "../index.html"
+      "dest": "/index.html"
     }
   ]
 }
