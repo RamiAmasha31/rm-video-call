@@ -210,16 +210,14 @@ app.post("/api/meeting/add-participant", async (req, res) => {
   }
 });
 
-// Fetch participants for a specific call ID
-app.get("/api/meeting/:callId/participants", async (req, res) => {
-  const { callId } = req.params;
+app.get("/api/meeting-participants", async (req, res) => {
+  const { callId } = req.query; // Use query parameter instead
   console.log("inside the server:", callId);
   try {
     if (!callId) {
       return res.status(400).json({ error: "Call ID is required" });
     }
 
-    // Search for the document where callId matches
     const meetingQuery = query(
       collection(db, "meetings"),
       where("callId", "==", callId)
@@ -230,11 +228,9 @@ app.get("/api/meeting/:callId/participants", async (req, res) => {
       return res.status(404).json({ error: "Meeting not found" });
     }
 
-    // Assuming there's only one document with the matching callId
     const meetingDoc = querySnapshot.docs[0];
     const meetingData = meetingDoc.data();
 
-    // Respond with the list of participants
     res.status(200).json(meetingData.participants || []);
   } catch (error) {
     console.error("Error fetching participants:", error);
