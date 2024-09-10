@@ -1,3 +1,5 @@
+// api/add-participant.js
+
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -33,6 +35,7 @@ export default async function handler(req, res) {
         .json({ error: "Call ID and User ID are required" });
     }
 
+    // Search for the document where callId matches
     const meetingQuery = query(
       collection(db, "meetings"),
       where("callId", "==", callId)
@@ -43,11 +46,13 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "Meeting not found" });
     }
 
+    // Assuming there's only one document with the matching callId
     const meetingDoc = querySnapshot.docs[0];
     const meetingRef = meetingDoc.ref;
     const meetingData = meetingDoc.data();
     const participants = meetingData.participants || [];
 
+    // Avoid duplicate entries
     if (!participants.includes(userId)) {
       participants.push(userId);
       await updateDoc(meetingRef, { participants });

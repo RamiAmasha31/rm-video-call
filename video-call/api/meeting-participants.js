@@ -1,3 +1,5 @@
+// api/meeting-participants.js
+
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -25,7 +27,6 @@ const db = getFirestore(firebaseApp);
 
 export default async function handler(req, res) {
   const { callId } = req.query;
-
   try {
     if (!callId) {
       return res.status(400).json({ error: "Call ID is required" });
