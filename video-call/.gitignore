@@ -1,4 +1,5 @@
-serviceAccountKey
+/server/serviceAccountKey.json
+
 .env
 # Logs
 logs
