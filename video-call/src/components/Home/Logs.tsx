@@ -34,7 +34,11 @@ const Logs: React.FC = () => {
           }
         );
         if (!response.ok) {
-          throw new Error("Failed to fetch logs");
+          // Extract and log detailed error information from the response
+          const errorText = await response.text();
+          throw new Error(
+            `Failed to fetch logs: ${response.status} - ${response.statusText}\n${errorText}`
+          );
         }
         const data = await response.json();
         setLogs(data);
