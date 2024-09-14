@@ -5,6 +5,7 @@ import logo from "../../assets/HomePage/logo.png";
 import "./Logs.css";
 import home from "../../assets/HomePage/home.png";
 import { useNavigate } from "react-router-dom";
+import debounce from "lodash.debounce"; // Import debounce function from lodash
 
 const Logs: React.FC = () => {
   const { user } = useVideoClient(); // Get user from context
@@ -62,19 +63,18 @@ const Logs: React.FC = () => {
     navigate("/home");
   };
 
-  useEffect(() => {
-    // Filter logs based on search term
-    console.log("Search term:", searchTerm);
-    console.log("Logs before filtering:", logs);
-
+  // Debounced version of the filtering function
+  const filterLogs = debounce((searchTerm: string) => {
     const results = logs.filter((log) =>
       log.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    console.log("Filtered results:", results);
     setFilteredLogs(results);
     setCurrentPage(1); // Reset to first page when search term changes
-  }, [searchTerm, logs]);
+  }, 300); // Adjust debounce delay as needed
+
+  useEffect(() => {
+    filterLogs(searchTerm);
+  }, [searchTerm]);
 
   const indexOfLastLog = currentPage * logsPerPage;
   const indexOfFirstLog = indexOfLastLog - logsPerPage;
