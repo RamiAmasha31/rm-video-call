@@ -19,8 +19,12 @@
       "dest": "/server/server.mjs"
     },
     {
+      "src": "/static/(.*)",
+      "dest": "/dist/static/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/dist/$1"
+      "dest": "/dist/index.html"
     }
   ]
 }
