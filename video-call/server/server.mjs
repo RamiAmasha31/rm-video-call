@@ -25,36 +25,31 @@ const server = createServer((req, res) => {
   }
 
   // Serve static files
-  if (
-    pathname === "/" ||
-    pathname.startsWith("/assets/") ||
-    pathname.startsWith("/dist/")
-  ) {
-    const filePath = join(
-      __dirname,
-      `../dist${pathname === "/" ? "/index.html" : pathname}`
-    );
-    fs.readFile(filePath, (err, data) => {
-      if (err) {
-        res.statusCode = 404;
-        res.end("Not Found");
-        return;
-      }
-      res.setHeader("Content-Type", getContentType(filePath));
-      res.end(data);
-    });
-    return;
-  }
-
-  // For all other routes, serve the index.html
-  const filePath = join(__dirname, "../dist/index.html");
+  const filePath = join(
+    __dirname,
+    `../dist${pathname === "/" ? "/index.html" : pathname}`
+  );
   fs.readFile(filePath, (err, data) => {
     if (err) {
+      // If file not found, serve index.html for client-side routing
+      if (err.code === "ENOENT") {
+        const fallbackPath = join(__dirname, "../dist/index.html");
+        fs.readFile(fallbackPath, (fallbackErr, fallbackData) => {
+          if (fallbackErr) {
+            res.statusCode = 404;
+            res.end("Not Found");
+            return;
+          }
+          res.setHeader("Content-Type", "text/html");
+          res.end(fallbackData);
+        });
+        return;
+      }
       res.statusCode = 404;
       res.end("Not Found");
       return;
     }
-    res.setHeader("Content-Type", "text/html");
+    res.setHeader("Content-Type", getContentType(filePath));
     res.end(data);
   });
 });
