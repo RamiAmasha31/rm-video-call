@@ -6,10 +6,7 @@
       "use": "@vercel/static-build",
       "config": {
         "buildCommand": "vite build",
-        "outputDirectory": "dist",
-        "env": {
-          "VERCEL": true
-        }
+        "outputDirectory": "dist"
       }
     },
     {
@@ -18,12 +15,7 @@
     }
   ],
   "routes": [
-    { "src": "/favicon.ico", "dest": "/favicon.ico" },
     { "src": "/api/(.*)", "dest": "/api/$1.js" },
     { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "rewrites": [],
-  "env": {
-    "PUBLIC_API_URL": "/api"
-  }
+  ]
 }
