@@ -17,6 +17,7 @@ const Logs: React.FC = () => {
   const logsPerPage = 6;
   const navigate = useNavigate(); // Initialize useNavigate hook
   const server_ip = "rmvideocall.vercel.app";
+
   useEffect(() => {
     const fetchLogs = async () => {
       if (!user) {
@@ -55,15 +56,22 @@ const Logs: React.FC = () => {
 
     fetchLogs();
   }, [user]);
+
   const handleLogout = () => {
-    console.log("navigate to home..");
+    console.log("Navigating to home...");
     navigate("/home");
   };
+
   useEffect(() => {
     // Filter logs based on search term
+    console.log("Search term:", searchTerm);
+    console.log("Logs before filtering:", logs);
+
     const results = logs.filter((log) =>
       log.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    console.log("Filtered results:", results);
     setFilteredLogs(results);
     setCurrentPage(1); // Reset to first page when search term changes
   }, [searchTerm, logs]);
