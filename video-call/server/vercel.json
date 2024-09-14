@@ -18,16 +18,7 @@
       "headers": {
         "Access-Control-Allow-Origin": "*"
       }
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/dist/index.html"
     }
   ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/dist/index.html"
-    }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
