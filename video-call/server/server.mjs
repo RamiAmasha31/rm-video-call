@@ -25,7 +25,11 @@ const server = createServer((req, res) => {
   }
 
   // Serve static files
-  if (pathname === "/" || pathname.startsWith("/static/")) {
+  if (
+    pathname === "/" ||
+    pathname.startsWith("/assets/") ||
+    pathname.startsWith("/dist/")
+  ) {
     const filePath = join(
       __dirname,
       `../dist${pathname === "/" ? "/index.html" : pathname}`
@@ -42,9 +46,17 @@ const server = createServer((req, res) => {
     return;
   }
 
-  // 404 for other routes
-  res.statusCode = 404;
-  res.end("Not Found");
+  // For all other routes, serve the index.html
+  const filePath = join(__dirname, "../dist/index.html");
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.statusCode = 404;
+      res.end("Not Found");
+      return;
+    }
+    res.setHeader("Content-Type", "text/html");
+    res.end(data);
+  });
 });
 
 // Helper function to determine content type
