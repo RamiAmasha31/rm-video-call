@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useVideoClient } from "../VideoClientContext";
-import "@fortawesome/fontawesome-free/css/all.min.css"; // Import FontAwesome CSS
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import logo from "../../assets/HomePage/logo.png";
 import "./Logs.css";
 import home from "../../assets/HomePage/home.png";
 import { useNavigate } from "react-router-dom";
-import debounce from "lodash.debounce"; // Import debounce function from lodash
 
 const Logs: React.FC = () => {
   const { user } = useVideoClient(); // Get user from context
@@ -46,7 +45,7 @@ const Logs: React.FC = () => {
         }
         const data = await response.json();
         setLogs(data);
-        setFilteredLogs(data);
+        setFilteredLogs(data); // Set initial filtered logs to all logs
       } catch (err: any) {
         console.error("Error fetching logs:", err.message);
         setError(`Failed to fetch logs: ${err.message}`);
@@ -58,23 +57,14 @@ const Logs: React.FC = () => {
     fetchLogs();
   }, [user]);
 
-  const handleLogout = () => {
-    console.log("Navigating to home...");
-    navigate("/home");
-  };
-
-  // Debounced version of the filtering function
-  const filterLogs = debounce((searchTerm: string) => {
+  // Filter logs when search term changes
+  useEffect(() => {
     const results = logs.filter((log) =>
       log.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredLogs(results);
     setCurrentPage(1); // Reset to first page when search term changes
-  }, 300); // Adjust debounce delay as needed
-
-  useEffect(() => {
-    filterLogs(searchTerm);
-  }, [searchTerm]);
+  }, [searchTerm, logs]);
 
   const indexOfLastLog = currentPage * logsPerPage;
   const indexOfFirstLog = indexOfLastLog - logsPerPage;
@@ -88,8 +78,8 @@ const Logs: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
-  if (loading) return <div>Loading logs...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div>Loading logs... 🕵️‍♂️</div>;
+  if (error) return <div>Error: {error} 😓</div>;
 
   return (
     <div className="logs-container">
@@ -99,7 +89,7 @@ const Logs: React.FC = () => {
         </div>
         <img
           src={home}
-          onClick={handleLogout}
+          onClick={() => navigate("/home")}
           alt="Exit"
           className="exit-icon"
         />
@@ -145,7 +135,7 @@ const Logs: React.FC = () => {
             ))
           ) : (
             <tr>
-              <td colSpan={2}>No logs found</td>
+              <td colSpan={2}>No logs found 🤷‍♂️</td>
             </tr>
           )}
         </tbody>
