@@ -7,6 +7,10 @@ export default defineConfig({
   build: {
     outDir: "dist",
   },
+  server: {
+    open: true, // Automatically open the browser on server start
+    // port: 3002, // Specify port if necessary
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./video-call"),

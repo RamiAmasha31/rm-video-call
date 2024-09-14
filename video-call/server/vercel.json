@@ -18,10 +18,12 @@
       "headers": {
         "Access-Control-Allow-Origin": "*"
       }
-    },
+    }
+  ],
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
