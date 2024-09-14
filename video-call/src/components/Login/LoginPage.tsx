@@ -17,7 +17,7 @@ function LoginPage() {
     event.preventDefault();
 
     try {
-      // Validate inputs
+      // Validate the inputs
       if (email === "") {
         setEmailError("Please enter your email");
         return;
