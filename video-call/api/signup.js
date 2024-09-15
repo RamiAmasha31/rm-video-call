@@ -1,3 +1,4 @@
+//api/signup.js
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import bcrypt from "bcrypt";
