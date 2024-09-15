@@ -21,9 +21,11 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+
 interface CallControlsProps {
   onLeave: () => void;
 }
+
 const CallControls: React.FC<CallControlsProps> = ({ onLeave }) => (
   <div className="str-video__call-controls">
     <ToggleAudioPublishingButton />
@@ -35,12 +37,13 @@ const CallControls: React.FC<CallControlsProps> = ({ onLeave }) => (
 
 const JoinMeeting = () => {
   const server_ip = "rmvideocall.vercel.app";
-
   const navigate = useNavigate();
   const { client, user } = useVideoClient(); // Extract user from context
   const [callId, setCallId] = useState("");
   const [call, setCall] = useState<any | null>(null);
   const [dialogOpen, setDialogOpen] = useState(true);
+  const [postCallDialogOpen, setPostCallDialogOpen] = useState(false); // New dialog state
+  const [dialogTimer, setDialogTimer] = useState<NodeJS.Timeout | null>(null); // Timer for post-call dialog
 
   // Function to send participant data to the server
   const sendParticipantDataToServer = async (callId: any, userId: any) => {
@@ -70,28 +73,22 @@ const JoinMeeting = () => {
   };
 
   useEffect(() => {
-    // Check if there's a stored call ID in localStorage
     const storedCallId = localStorage.getItem("currentCallId");
-
-    // If there's a stored call ID, attempt to join the call on mount
     if (storedCallId && client) {
       const callType = "default";
-      const trimmedCallId = storedCallId.trim(); // Use the stored call ID
+      const trimmedCallId = storedCallId.trim();
 
       const joinStoredCall = async () => {
         try {
           const existingCall = client.call(callType, trimmedCallId);
           await existingCall.join();
-          console.log("Joined existing call successfully:", existingCall);
-          setCall(existingCall); // Set the active call instance
+          setCall(existingCall); // Set active call instance
 
-          // Send participant data to the server
           if (user) {
             await sendParticipantDataToServer(trimmedCallId, user.id);
           }
         } catch (error) {
           console.error("Error joining existing call:", error);
-          // Handle error (show message, retry, etc.)
         }
       };
 
@@ -101,7 +98,7 @@ const JoinMeeting = () => {
 
   const handleJoinMeeting = async () => {
     const callType = "default";
-    const trimmedCallId = callId.trim(); // Use the entered call ID
+    const trimmedCallId = callId.trim();
     if (!client) {
       console.error("StreamVideoClient is not initialized.");
       return;
@@ -110,32 +107,44 @@ const JoinMeeting = () => {
     try {
       const newCall = client.call(callType, trimmedCallId);
       await newCall.join();
-      console.log("Joined call successfully:", newCall);
-      setCall(newCall); // Set the active call instance
+      setCall(newCall); // Set active call instance
 
-      // Store the current call ID in localStorage for persistence
       localStorage.setItem("currentCallId", trimmedCallId);
-      setDialogOpen(false); // Close the dialog
+      setDialogOpen(false); // Close join dialog
 
-      // Send participant data to the server
       if (user) {
         await sendParticipantDataToServer(trimmedCallId, user.id);
       }
     } catch (error) {
       console.error("Error joining call:", error);
-      // Handle error (show message, retry, etc.)
     }
   };
 
   const handleCancel = () => {
     setDialogOpen(false);
-    navigate("/home"); // Navigate to home when canceling
+    navigate("/home");
   };
 
   const handleLogout = () => {
     navigate("/");
-    // Implement logout logic here
-    // For example, clear session, localStorage, etc.
+    // Implement logout logic
+  };
+
+  // Timer for the post-call dialog
+  const startPostCallTimer = () => {
+    const timer = setTimeout(() => {
+      setPostCallDialogOpen(false);
+      navigate("/home"); // Navigate after 30 seconds
+    }, 30000); // 30 seconds
+    setDialogTimer(timer);
+  };
+
+  const handlePostCallClose = () => {
+    setPostCallDialogOpen(false);
+    if (dialogTimer) {
+      clearTimeout(dialogTimer);
+    }
+    navigate("/home");
   };
 
   return (
@@ -175,31 +184,45 @@ const JoinMeeting = () => {
           </Dialog>
         ) : (
           <StreamCall call={call}>
-            <JoinedMeetingUI />
+            <JoinedMeetingUI
+              onCallEnd={() => setPostCallDialogOpen(true)} // Open post-call dialog on call end
+            />
           </StreamCall>
         )}
       </div>
+
+      {/* Post-call dialog */}
+      <Dialog open={postCallDialogOpen} onClose={handlePostCallClose}>
+        <DialogTitle>Call Ended</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            The call has ended. You will be redirected to the home page in 30
+            seconds.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePostCallClose}>Close Now</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
 
-const JoinedMeetingUI = () => {
+const JoinedMeetingUI = ({ onCallEnd }: { onCallEnd: () => void }) => {
   const navigate = useNavigate();
-
-  const handleLeaveCall = () => {
-    // Clear the stored call ID when leaving the call
-    localStorage.removeItem("currentCallId");
-
-    // Navigate back to home page when leaving the call
-    navigate("/home");
-  };
-
   const { useCallCallingState } = useCallStateHooks();
   const callingState = useCallCallingState();
 
-  if (callingState === CallingState.LEFT) {
-    handleLeaveCall();
-  }
+  const handleLeaveCall = () => {
+    localStorage.removeItem("currentCallId");
+    navigate("/home");
+  };
+
+  useEffect(() => {
+    if (callingState === CallingState.LEFT) {
+      onCallEnd();
+    }
+  }, [callingState, onCallEnd]);
 
   return (
     <StreamTheme>

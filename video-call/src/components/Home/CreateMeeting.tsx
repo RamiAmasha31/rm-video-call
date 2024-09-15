@@ -283,7 +283,7 @@ const CreateMeeting = () => {
             <DialogTitle>Loading</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Please wait while we set up your meeting.
+                Please wait while we process your meeting data.
               </DialogContentText>
               <CircularProgress />
             </DialogContent>
