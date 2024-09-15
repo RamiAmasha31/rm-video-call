@@ -78,7 +78,7 @@ function LoginPage() {
           <label className="errorLabel">{passwordError}</label>
         </div>
         <button type="submit" className="inputButton">
-          Submit
+          Login
         </button>
       </form>
       <p>
