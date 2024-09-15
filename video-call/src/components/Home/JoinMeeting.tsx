@@ -185,7 +185,10 @@ const JoinMeeting = () => {
         ) : (
           <StreamCall call={call}>
             <JoinedMeetingUI
-              onCallEnd={() => setPostCallDialogOpen(true)} // Open post-call dialog on call end
+              onCallEnd={() => {
+                setPostCallDialogOpen(true);
+                startPostCallTimer(); // Start timer when the call ends
+              }}
             />
           </StreamCall>
         )}
