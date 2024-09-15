@@ -2,13 +2,25 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/index.tsx",
-      "use": "@vercel/static-build"
+      "src": "server/server.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/index.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/.*",
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
       "dest": "/index.html"
     }
   ]
