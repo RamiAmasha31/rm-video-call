@@ -22,11 +22,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
-interface CallControlsProps {
-  onLeave: () => void;
-}
-
-const CallControls: React.FC<CallControlsProps> = ({ onLeave }) => (
+// Call controls component
+const CallControls = ({ onLeave }) => (
   <div className="str-video__call-controls">
     <ToggleAudioPublishingButton />
     <ToggleVideoPublishingButton />
@@ -35,32 +32,56 @@ const CallControls: React.FC<CallControlsProps> = ({ onLeave }) => (
   </div>
 );
 
+// Dialog component for joining a meeting
+const JoinMeetingDialog = ({ open, callId, onJoin, onCancel }) => (
+  <Dialog open={open} onClose={onCancel}>
+    <DialogTitle>Enter Call ID</DialogTitle>
+    <DialogContent>
+      <DialogContentText>
+        Please enter the call ID to join the meeting.
+      </DialogContentText>
+      <TextField
+        autoFocus
+        margin="dense"
+        id="call-id"
+        label="Call ID"
+        type="text"
+        fullWidth
+        variant="standard"
+        value={callId}
+        onChange={(e) => onJoin(e.target.value)}
+      />
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={onCancel}>Cancel</Button>
+      <Button onClick={onJoin}>Join Meeting</Button>
+    </DialogActions>
+  </Dialog>
+);
+
+// Main component for joining a meeting
 const JoinMeeting = () => {
   const server_ip = "rmvideocall.vercel.app";
   const navigate = useNavigate();
-  const { client, user } = useVideoClient(); // Extract user from context
+  const { client, user } = useVideoClient();
   const [callId, setCallId] = useState("");
-  const [call, setCall] = useState<any | null>(null);
+  const [call, setCall] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(true);
-  const [postCallDialogOpen, setPostCallDialogOpen] = useState(false); // New dialog state
-  const [dialogTimer, setDialogTimer] = useState<NodeJS.Timeout | null>(null); // Timer for post-call dialog
 
   // Function to send participant data to the server
-  const sendParticipantDataToServer = async (callId: any, userId: any) => {
+  const sendParticipantDataToServer = async (callId, userId) => {
     try {
       const response = await fetch(
         `https://${server_ip}/api/meeting-add-participant`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ callId, userId }),
         }
       );
 
       if (!response.ok) {
-        const errorText = await response.text(); // Get the error message from the server
+        const errorText = await response.text();
         throw new Error(
           `Failed to send participant data to server: ${errorText}`
         );
@@ -74,18 +95,17 @@ const JoinMeeting = () => {
 
   useEffect(() => {
     const storedCallId = localStorage.getItem("currentCallId");
-    if (storedCallId && client) {
-      const callType = "default";
-      const trimmedCallId = storedCallId.trim();
 
+    if (storedCallId && client) {
       const joinStoredCall = async () => {
         try {
-          const existingCall = client.call(callType, trimmedCallId);
+          const existingCall = client.call("default", storedCallId.trim());
           await existingCall.join();
-          setCall(existingCall); // Set active call instance
+          console.log("Joined existing call successfully:", existingCall);
+          setCall(existingCall);
 
           if (user) {
-            await sendParticipantDataToServer(trimmedCallId, user.id);
+            await sendParticipantDataToServer(storedCallId.trim(), user.id);
           }
         } catch (error) {
           console.error("Error joining existing call:", error);
@@ -97,23 +117,21 @@ const JoinMeeting = () => {
   }, [client, user]);
 
   const handleJoinMeeting = async () => {
-    const callType = "default";
-    const trimmedCallId = callId.trim();
     if (!client) {
       console.error("StreamVideoClient is not initialized.");
       return;
     }
 
     try {
-      const newCall = client.call(callType, trimmedCallId);
+      const newCall = client.call("default", callId.trim());
       await newCall.join();
-      setCall(newCall); // Set active call instance
-
-      localStorage.setItem("currentCallId", trimmedCallId);
-      setDialogOpen(false); // Close join dialog
+      console.log("Joined call successfully:", newCall);
+      setCall(newCall);
+      localStorage.setItem("currentCallId", callId.trim());
+      setDialogOpen(false);
 
       if (user) {
-        await sendParticipantDataToServer(trimmedCallId, user.id);
+        await sendParticipantDataToServer(callId.trim(), user.id);
       }
     } catch (error) {
       console.error("Error joining call:", error);
@@ -127,24 +145,8 @@ const JoinMeeting = () => {
 
   const handleLogout = () => {
     navigate("/");
-    // Implement logout logic
-  };
-
-  // Timer for the post-call dialog
-  const startPostCallTimer = () => {
-    const timer = setTimeout(() => {
-      setPostCallDialogOpen(false);
-      navigate("/home"); // Navigate after 30 seconds
-    }, 30000); // 30 seconds
-    setDialogTimer(timer);
-  };
-
-  const handlePostCallClose = () => {
-    setPostCallDialogOpen(false);
-    if (dialogTimer) {
-      clearTimeout(dialogTimer);
-    }
-    navigate("/home");
+    // Implement logout logic here
+    localStorage.removeItem("currentCallId");
   };
 
   return (
@@ -159,73 +161,39 @@ const JoinMeeting = () => {
       </Link>
       <div className="main-content">
         {!call ? (
-          <Dialog open={dialogOpen} onClose={handleCancel}>
-            <DialogTitle>Enter Call ID</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Please enter the call ID to join the meeting.
-              </DialogContentText>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="call-id"
-                label="Call ID"
-                type="text"
-                fullWidth
-                variant="standard"
-                value={callId}
-                onChange={(e) => setCallId(e.target.value)}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCancel}>Cancel</Button>
-              <Button onClick={handleJoinMeeting}>Join Meeting</Button>
-            </DialogActions>
-          </Dialog>
+          <JoinMeetingDialog
+            open={dialogOpen}
+            callId={callId}
+            onJoin={handleJoinMeeting}
+            onCancel={handleCancel}
+          />
         ) : (
           <StreamCall call={call}>
-            <JoinedMeetingUI
-              onCallEnd={() => {
-                setPostCallDialogOpen(true);
-                startPostCallTimer(); // Start timer when the call ends
-              }}
-            />
+            <JoinedMeetingUI />
           </StreamCall>
         )}
       </div>
-
-      {/* Post-call dialog */}
-      <Dialog open={postCallDialogOpen} onClose={handlePostCallClose}>
-        <DialogTitle>Call Ended</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            The call has ended. You will be redirected to the home page in 30
-            seconds.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handlePostCallClose}>Close Now</Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 };
 
-const JoinedMeetingUI = ({ onCallEnd }: { onCallEnd: () => void }) => {
+// UI for an ongoing meeting
+const JoinedMeetingUI = () => {
   const navigate = useNavigate();
   const { useCallCallingState } = useCallStateHooks();
   const callingState = useCallCallingState();
+
+  useEffect(() => {
+    if (callingState === CallingState.LEFT) {
+      localStorage.removeItem("currentCallId");
+      navigate("/home");
+    }
+  }, [callingState, navigate]);
 
   const handleLeaveCall = () => {
     localStorage.removeItem("currentCallId");
     navigate("/home");
   };
-
-  useEffect(() => {
-    if (callingState === CallingState.LEFT) {
-      onCallEnd();
-    }
-  }, [callingState, onCallEnd]);
 
   return (
     <StreamTheme>
