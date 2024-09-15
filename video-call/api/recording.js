@@ -122,10 +122,12 @@ export default async function handler(req, res) {
           }
         });
 
-        pdfDoc.fontSize(12).text(`Transcription for Call ID: ${callId}`, {
-          underline: true,
-          align: "center",
-        });
+        pdfDoc
+          .fontSize(12)
+          .text(`Transcription for Call ID: ${callId}`, {
+            underline: true,
+            align: "center",
+          });
         pdfDoc.moveDown();
 
         for (const utterance of transcriptData.utterances) {
