@@ -6,9 +6,6 @@
     }
   ],
   "functions": {
-    "server/api/**/*.js": {
-      "memory": 1024,
-      "maxDuration": 60
-    }
+    "server/api/**/*.js": {}
   }
 }
