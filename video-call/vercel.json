@@ -6,7 +6,7 @@
     }
   ],
   "functions": {
-    "server/api/**/*.js": {
+    "video-call/server/api/**/*.js": {
       "maxDuration": 60
     }
   }
