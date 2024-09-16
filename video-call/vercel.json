@@ -6,6 +6,8 @@
     }
   ],
   "functions": {
-    "server/api/**/*.js": {}
+    "server/api/**/*.js": {
+      "maxDuration": 60
+    }
   }
 }
