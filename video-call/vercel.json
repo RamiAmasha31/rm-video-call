@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/**",
-      "destination": "/server/api/:path*"
+      "function": "api"
     },
     {
       "source": "**",
