@@ -1,19 +1,43 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./SignupPage.css";
+import "./SignupPage.css"; // Ensure to style your modal here
 
-// Fetch the environment variables
-const isProduction = import.meta.env.MODE === "production"; // Check if in production
-const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002"; // Adjust based on environment
-const server_protocol = isProduction ? "https" : "http"; // Use HTTPS in production, HTTP in development
+const isProduction = import.meta.env.MODE === "production";
+const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002";
+const server_protocol = isProduction ? "https" : "http";
+
+/**
+ * Modal Component
+ *
+ * @param {object} props
+ * @param {boolean} props.isOpen - Modal visibility state.
+ * @param {string} props.message - Message to be displayed in the modal.
+ * @param {() => void} props.onClose - Function to close the modal.
+ */
+const Modal: React.FC<{
+  isOpen: boolean;
+  message: string;
+  onClose: () => void;
+}> = ({ isOpen, message, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <p>{message}</p>
+        <button onClick={onClose} className="close-button">
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
+
 /**
  * SignupPage Component
  *
- * Renders a signup form for user registration. Manages email, password, and confirm password inputs,
- * performs validation checks, and communicates with the server to register a new user.
- *
- * @component
- * @returns {JSX.Element} The rendered component.
+ * Renders a signup form for user registration.
+ * @returns {JSX.Element}
  */
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -22,21 +46,16 @@ const SignupPage: React.FC = () => {
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalMessage, setModalMessage] = useState<string>("");
   const navigate = useNavigate();
-  /**
-   * Handles the signup process.
-   *
-   * Validates input fields for email format, password length, and password match.
-   * Makes a POST request to the server to register a new user and handles response errors.
-   *
-   * @param {React.FormEvent} e - The form submission event.
-   * @returns {Promise<void>} A promise that resolves when the signup process is complete.
-   */
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setEmailError("");
     setPasswordError("");
     setConfirmPasswordError("");
+    setModalOpen(false);
 
     if (password !== confirmPassword) {
       setConfirmPasswordError("Passwords do not match");
@@ -65,16 +84,23 @@ const SignupPage: React.FC = () => {
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Signup failed");
+      if (response.ok) {
+        setModalMessage("Signup successful! Redirecting...");
+        setModalOpen(true);
+        setTimeout(() => navigate("/"), 2000); // Redirect after 2 seconds
+      } else {
+        const errorData = await response.json();
+        setModalMessage(
+          errorData.error === "Email already exists"
+            ? "Email already in use"
+            : "Signup failed, please try again"
+        );
+        setModalOpen(true);
       }
-
-      navigate("/"); // Redirect to the home page or any other page after successful signup
     } catch (error) {
       console.error("Error during signup:", error);
-      setEmailError("Signup failed, please try again");
-      setPasswordError("Signup failed, please try again");
-      setConfirmPasswordError("Signup failed, please try again");
+      setModalMessage("Signup failed, please try again");
+      setModalOpen(true);
     }
   };
 
@@ -115,6 +141,13 @@ const SignupPage: React.FC = () => {
           Sign Up
         </button>
       </form>
+
+      {/* Modal for success or error messages */}
+      <Modal
+        isOpen={modalOpen}
+        message={modalMessage}
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 };

@@ -1,6 +1,12 @@
-//api/signup.js
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore"; // Import Firestore query methods
 import bcrypt from "bcrypt";
 import { StreamChat } from "stream-chat";
 import dotenv from "dotenv";
@@ -19,26 +25,7 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
-/**
- * Handles user signup by creating a new user record in Firestore, hashing the user's password, and generating a Stream Chat token.
- *
- * @function handler
- * @param {Object} req - The HTTP request object.
- * @param {Object} res - The HTTP response object.
- * @param {Object} req.body - The request body.
- * @param {string} req.body.email - The user's email address.
- * @param {string} req.body.password - The user's password.
- *
- * @returns {void} Returns a JSON response.
- * - **Success:**
- *   - Status 201 with a success message indicating user creation.
- * - **Errors:**
- *   - 400: When `email` or `password` is missing.
- *   - 500: When an internal server error occurs during user creation, password hashing, or token generation.
- *
- * @throws {Object}
- * - 500: If there is an issue during user record creation, password hashing, or token generation.
- */
+
 const serverClient = StreamChat.getInstance(
   process.env.STREAM_API_KEY,
   process.env.STREAM_API_SECRET
@@ -46,18 +33,30 @@ const serverClient = StreamChat.getInstance(
 
 export default async function handler(req, res) {
   const { email, password } = req.body;
+
   try {
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
+    // Check if the email already exists in Firestore
+    const usersCollection = collection(db, "users");
+    const emailQuery = query(usersCollection, where("email", "==", email));
+    const querySnapshot = await getDocs(emailQuery);
+
+    if (!querySnapshot.empty) {
+      // If the querySnapshot is not empty, the email already exists
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    // If email does not exist, proceed with signup
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const userId = email.split("@")[0];
     const tokenResponse = await serverClient.createToken(userId);
 
-    await addDoc(collection(db, "users"), {
+    await addDoc(usersCollection, {
       userId,
       password: hashedPassword,
       email,
