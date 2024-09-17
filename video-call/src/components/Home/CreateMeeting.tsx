@@ -1,3 +1,9 @@
+/**
+ * @fileoverview
+ * Handles the creation and management of video meetings using the Stream Video SDK.
+ * Includes functionality to create a new meeting, rejoin an existing meeting,
+ * and display a user interface for managing calls and meeting details.
+ */
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVideoClient } from "../VideoClientContext";
@@ -26,6 +32,18 @@ const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002";
 const server_protocol = isProduction ? "https" : "http";
 const generateCallId = () => `call-${Math.random().toString(36).substr(2, 9)}`;
 // Define props type for MyUILayout component
+/**
+ * `MyUILayout` Component
+ *
+ * @param {Object} props - Component props
+ * @param {Object} props.call - The active video call object
+ * @param {string} props.callId - Unique identifier for the call
+ * @param {boolean} props.dialogOpen - Boolean indicating if the dialog is open
+ * @param {Function} props.onCloseDialog - Callback function to handle dialog close
+ * @param {Function} props.onSetLoading - Callback to set loading state
+ *
+ * @returns {React.Element} The rendered UI component
+ */
 interface MyUILayoutProps {
   call: any; // Replace `any` with the appropriate type if known
   callId: string;
@@ -39,7 +57,12 @@ const MyUILayout = React.memo<MyUILayoutProps>(
     const { useCallCallingState } = useCallStateHooks();
     const callingState = useCallCallingState();
     const navigate = useNavigate();
-
+    /**
+     * Fetches participants for a given call ID
+     *
+     * @param {string} callId - The call ID to fetch participants for
+     * @returns {Promise<void>}
+     */
     const fetchParticipants = async (callId: any) => {
       try {
         // console.log(callId);
@@ -62,7 +85,12 @@ const MyUILayout = React.memo<MyUILayoutProps>(
         console.error("Error fetching participants:", error);
       }
     };
-
+    /**
+     * Handles leaving the call, including fetching participants,
+     * ending the call, and sending recording data to the server
+     *
+     * @returns {Promise<void>}
+     */
     const handleLeaveCall = useCallback(async () => {
       if (call) {
         try {
@@ -122,7 +150,13 @@ const MyUILayout = React.memo<MyUILayoutProps>(
         }
       }
     }, [call, callId, navigate, onSetLoading]);
-
+    /**
+     * Sends recording data to the server
+     *
+     * @param {string} callId - The call ID associated with the recording
+     * @param {string} url - The URL of the recording
+     * @returns {Promise<void>}
+     */
     const sendRecordingDataToServer = async (callId: any, url: any) => {
       try {
         console.log(
@@ -190,6 +224,14 @@ const MyUILayout = React.memo<MyUILayoutProps>(
     );
   }
 );
+/**
+ * `CreateMeeting` Component
+ *
+ * Manages the creation of a new meeting or rejoining an existing meeting.
+ * Displays the `MyUILayout` component with call controls and meeting details.
+ *
+ * @returns {React.Element} The rendered UI component
+ */
 const CreateMeeting = () => {
   const { client, user } = useVideoClient();
   const [call, setCall] = useState<any | null>(null);
@@ -198,7 +240,13 @@ const CreateMeeting = () => {
   const [loading, setLoading] = useState(true); // Start with loading state
 
   const hasInitializedRef = useRef(false);
-
+  /**
+   * Sends meeting data to the server
+   *
+   * @param {string} meetingId - The meeting ID
+   * @param {string} userId - The user ID
+   * @returns {Promise<void>}
+   */
   const sendMeetingDataToServer = useCallback(
     async (meetingId: any, userId: any) => {
       try {
@@ -226,7 +274,11 @@ const CreateMeeting = () => {
     },
     []
   );
-
+  /**
+   * Handles creating or joining a meeting
+   *
+   * @returns {Promise<void>}
+   */
   const handleCreateMeeting = useCallback(async () => {
     if (!client || !user) {
       console.error("StreamVideoClient or user is not initialized.");

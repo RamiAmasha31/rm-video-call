@@ -19,7 +19,26 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
-
+/**
+ * Handles user signup by creating a new user record in Firestore, hashing the user's password, and generating a Stream Chat token.
+ *
+ * @function handler
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.email - The user's email address.
+ * @param {string} req.body.password - The user's password.
+ *
+ * @returns {void} Returns a JSON response.
+ * - **Success:**
+ *   - Status 201 with a success message indicating user creation.
+ * - **Errors:**
+ *   - 400: When `email` or `password` is missing.
+ *   - 500: When an internal server error occurs during user creation, password hashing, or token generation.
+ *
+ * @throws {Object}
+ * - 500: If there is an issue during user record creation, password hashing, or token generation.
+ */
 const serverClient = StreamChat.getInstance(
   process.env.STREAM_API_KEY,
   process.env.STREAM_API_SECRET

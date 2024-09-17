@@ -31,6 +31,18 @@ interface CallControlsProps {
   onLeave: () => void;
 }
 
+/**
+ * `CallControls` component provides UI elements for managing a video call.
+ * It includes buttons for toggling audio, video, screen sharing, and cancelling the call.
+ *
+ * @component
+ * @param {CallControlsProps} props - The properties for the component.
+ * @param {Function} props.onLeave - Function to call when the user leaves the call.
+ * @example
+ * return (
+ *   <CallControls onLeave={handleLeave} />
+ * );
+ */
 const CallControls: React.FC<CallControlsProps> = ({ onLeave }) => (
   <div className="str-video__call-controls">
     <ToggleAudioPublishingButton />
@@ -39,14 +51,32 @@ const CallControls: React.FC<CallControlsProps> = ({ onLeave }) => (
     <CancelCallButton onLeave={onLeave} />
   </div>
 );
-
+/**
+ * `JoinMeeting` component handles the process of joining a video call.
+ * It manages state for the call ID, current call, and dialog visibility.
+ * It provides functionality to join a meeting by entering the call ID and sends participant data to the server.
+ *
+ * @component
+ * @example
+ * return (
+ *   <JoinMeeting />
+ * );
+ */
 const JoinMeeting = () => {
   const navigate = useNavigate();
   const { client, user } = useVideoClient();
   const [callId, setCallId] = useState("");
   const [call, setCall] = useState<any | null>(null);
   const [dialogOpen, setDialogOpen] = useState(true);
-
+  /**
+   * Sends participant data to the server.
+   *
+   * @async
+   * @function
+   * @param {any} callId - The ID of the call.
+   * @param {any} userId - The ID of the user.
+   * @returns {Promise<void>}
+   */
   const sendParticipantDataToServer = async (callId: any, userId: any) => {
     try {
       const response = await fetch(
@@ -98,7 +128,14 @@ const JoinMeeting = () => {
       joinStoredCall();
     }
   }, [client, user]);
-
+  /**
+   * Handles the process of joining a meeting.
+   * It creates a new call, joins it, and updates the local storage.
+   *
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   const handleJoinMeeting = async () => {
     const callType = "default";
     const trimmedCallId = callId.trim();
@@ -123,12 +160,17 @@ const JoinMeeting = () => {
       console.error("Error joining call:", error);
     }
   };
-
+  /**
+   * Handles the cancellation of the join meeting dialog.
+   * It closes the dialog and navigates to the home page.
+   */
   const handleCancel = () => {
     setDialogOpen(false);
     navigate("/home");
   };
-
+  /**
+   * Handles user logout by navigating to the home page.
+   */
   const handleLogout = () => {
     navigate("/");
   };
@@ -181,7 +223,10 @@ const JoinMeeting = () => {
 const JoinedMeetingUI = () => {
   const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  /**
+   * Handles leaving the call by showing a dialog and removing the call ID from local storage.
+   * It navigates to the home page after a 30-second delay.
+   */
   const handleLeaveCall = () => {
     setDialogOpen(true);
     setTimeout(() => {

@@ -10,10 +10,25 @@ import exit from "../../assets/HomePage/exit.png";
 import logo from "../../assets/HomePage/logo.png";
 import { useNavigate } from "react-router-dom";
 import "../Home/HomePage.css";
-
+/**
+ * The `HomePage` component displays the main page of the application.
+ * It includes navigation, sections for creating/joining meetings, viewing logs,
+ * and information about the project and its staff members.
+ *
+ * @component
+ * @example
+ * return (
+ *   <HomePage />
+ * )
+ */
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-
+  /**
+   * Handles user logout by navigating to the home page.
+   *
+   * @function
+   * @returns {void}
+   */
   const handleLogout = () => {
     navigate("/");
   };

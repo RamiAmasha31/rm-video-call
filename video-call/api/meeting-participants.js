@@ -24,7 +24,22 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
-
+/**
+ * Retrieves the list of participants for a specified meeting from Firestore.
+ *
+ * @function handler
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Object} req.query - The query parameters of the request.
+ * @param {string} req.query.callId - The ID of the meeting for which to retrieve participants.
+ *
+ * @returns {void} Returns a JSON response.
+ * - **Success:** A list of participants for the specified meeting.
+ * - **Errors:**
+ *   - 400: When `callId` is missing.
+ *   - 404: When the meeting with the given `callId` is not found.
+ *   - 500: When an internal server error occurs.
+ */
 export default async function handler(req, res) {
   const { callId } = req.query;
   try {

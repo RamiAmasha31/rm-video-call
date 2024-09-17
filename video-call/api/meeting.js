@@ -16,7 +16,23 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
-
+/**
+ * Creates a new meeting and adds it to Firestore.
+ *
+ * @function handler
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.callId - The ID of the meeting to be created.
+ * @param {string} req.body.userId - The ID of the user to be added as a participant.
+ *
+ * @returns {void} Returns a JSON response.
+ * - **Success:**
+ *   - Status 201 with the meeting details including `callId`, `type`, and `docId`.
+ * - **Errors:**
+ *   - 400: When `callId` or `userId` is missing.
+ *   - 500: When an internal server error occurs.
+ */
 export default async function handler(req, res) {
   const { callId, userId } = req.body;
   try {

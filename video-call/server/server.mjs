@@ -1,3 +1,15 @@
+/**
+ * @file server.js
+ * @description Sets up and configures an Express server that handles API requests and serves static files.
+ * - Initializes the Express app.
+ * - Parses JSON bodies and sets CORS headers.
+ * - Dynamically imports API modules based on the request URL.
+ * - Serves static files from the `dist` directory.
+ * - Handles 404 errors for static files.
+ *
+ * @module server
+ */
+
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -14,7 +26,16 @@ const PORT = 3002;
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Set CORS headers
+/**
+ * Middleware to set CORS headers and handle preflight requests.
+ * - Sets headers to allow cross-origin requests.
+ * - Handles OPTIONS method for preflight requests.
+ *
+ * @function
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function.
+ */
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // Or specify origin
   res.setHeader(
@@ -33,7 +54,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Route API requests
+/**
+ * Middleware to route API requests.
+ * - Dynamically imports the API module based on the request URL.
+ * - Calls the module's default export as an Express handler.
+ *
+ * @function
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function.
+ */
 app.use("/api", async (req, res, next) => {
   // Strip query parameters from the URL
   const cleanUrl = req.url.split("?")[0];
@@ -53,10 +83,24 @@ app.use("/api", async (req, res, next) => {
   }
 });
 
-// Serve static files
+/**
+ * Middleware to serve static files from the `dist` directory.
+ * - Handles requests for static files and falls back to `index.html` for single-page applications.
+ *
+ * @function
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ */
 app.use(express.static(path.join(__dirname, "../dist")));
 
-// Handle 404 for static files
+/**
+ * Middleware to handle 404 errors for static files.
+ * - Serves `index.html` for root requests or attempts to serve requested files.
+ *
+ * @function
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ */
 app.use(async (req, res) => {
   const filePath = path.join(
     __dirname,

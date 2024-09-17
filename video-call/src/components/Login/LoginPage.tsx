@@ -8,7 +8,17 @@ import "./Login.css";
 const isProduction = import.meta.env.MODE === "production"; // Check if in production
 const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002"; // Adjust based on environment
 const server_protocol = isProduction ? "https" : "http"; // Use HTTPS in production, HTTP in development
-// console.log(server_ip);
+/**
+ * `LoginPage` is a React component that renders a login form allowing users to authenticate
+ * by entering their email and password. It handles form submission, validates inputs,
+ * and communicates with the server to authenticate the user.
+ *
+ * @component
+ * @example
+ * return (
+ *   <LoginPage />
+ * );
+ */
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +26,12 @@ function LoginPage() {
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate(); // Initialize useNavigate hook
   const { setClientDetails } = useVideoClient(); // Destructure setClientDetails from context
-
+  /**
+   * Handles form submission, validates inputs, and sends a login request to the server.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} event - The form submission event.
+   * @returns {Promise<void>}
+   */
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 

@@ -33,7 +33,27 @@ const storage = getStorage(firebaseApp);
 const client = new AssemblyAI({
   apiKey: process.env.ASSEMBLYAI_API_KEY,
 });
-
+/**
+ * Handles the process of transcribing audio, generating a PDF of the transcription, and updating user logs in Firestore with the transcription URL.
+ *
+ * @function handler
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.callId - The ID of the call for which the transcription is being processed.
+ * @param {string} req.body.url - The URL of the audio file to be transcribed.
+ *
+ * @returns {void} Returns a JSON response.
+ * - **Success:**
+ *   - Status 201 with a success message and the download URL of the generated PDF.
+ * - **Errors:**
+ *   - 400: When `callId` or `url` is missing.
+ *   - 404: When the meeting with the given `callId` is not found.
+ *   - 500: When the transcript data is invalid or an internal server error occurs.
+ *
+ * @throws {Object}
+ * - 500: If there is an issue during transcription, PDF creation, file upload, or updating user logs.
+ */
 export default async function handler(req, res) {
   const { callId, url } = req.body;
   try {

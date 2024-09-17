@@ -1,3 +1,8 @@
+/**
+ * @fileoverview
+ * This file contains the `Logs` component for displaying and managing transcription logs.
+ * It handles fetching logs from the server, filtering logs based on search input, and paginating through the logs.
+ */
 import React, { useEffect, useState } from "react";
 import { useVideoClient } from "../VideoClientContext";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -11,6 +16,16 @@ const isProduction = import.meta.env.MODE === "production";
 const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002";
 const server_protocol = isProduction ? "https" : "http";
 
+/**
+ * `Logs` component displays transcription logs for the user.
+ * It provides search functionality, pagination controls, and error handling.
+ *
+ * @component
+ * @example
+ * return (
+ *   <Logs />
+ * );
+ */
 const Logs: React.FC = () => {
   const { user } = useVideoClient(); // Get user from context
   const [logs, setLogs] = useState<string[]>([]);
@@ -22,6 +37,14 @@ const Logs: React.FC = () => {
   const logsPerPage = 6;
   const navigate = useNavigate(); // Initialize useNavigate hook
 
+  /**
+   * Fetches logs from the server when the component mounts or the `user` changes.
+   * Handles errors and sets the logs state.
+   *
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   useEffect(() => {
     const fetchLogs = async () => {
       if (!user) {
@@ -60,7 +83,13 @@ const Logs: React.FC = () => {
 
     fetchLogs();
   }, [user]);
-
+  /**
+   * Filters logs based on the search term.
+   * Resets to the first page when the search term changes.
+   *
+   * @function
+   * @returns {void}
+   */
   // Filter logs when search term changes
   useEffect(() => {
     const results = logs.filter((log) =>
@@ -73,11 +102,24 @@ const Logs: React.FC = () => {
   const indexOfLastLog = currentPage * logsPerPage;
   const indexOfFirstLog = indexOfLastLog - logsPerPage;
   const currentLogs = filteredLogs.slice(indexOfFirstLog, indexOfLastLog);
-
+  /**
+   * Updates the search term state when the user types in the search input.
+   *
+   * @function
+   * @param {React.ChangeEvent<HTMLInputElement>} event - The event object from the input change.
+   * @returns {void}
+   */
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
+  /**
+   * Updates the current page state to reflect the selected page number.
+   *
+   * @function
+   * @param {number} pageNumber - The number of the page to navigate to.
+   * @returns {void}
+   */
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };

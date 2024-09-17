@@ -6,7 +6,15 @@ import "./SignupPage.css";
 const isProduction = import.meta.env.MODE === "production"; // Check if in production
 const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002"; // Adjust based on environment
 const server_protocol = isProduction ? "https" : "http"; // Use HTTPS in production, HTTP in development
-
+/**
+ * SignupPage Component
+ *
+ * Renders a signup form for user registration. Manages email, password, and confirm password inputs,
+ * performs validation checks, and communicates with the server to register a new user.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered component.
+ */
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -15,7 +23,15 @@ const SignupPage: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
   const navigate = useNavigate();
-
+  /**
+   * Handles the signup process.
+   *
+   * Validates input fields for email format, password length, and password match.
+   * Makes a POST request to the server to register a new user and handles response errors.
+   *
+   * @param {React.FormEvent} e - The form submission event.
+   * @returns {Promise<void>} A promise that resolves when the signup process is complete.
+   */
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setEmailError("");
