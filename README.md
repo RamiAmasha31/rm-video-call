@@ -6,7 +6,7 @@ The project is organized into several directories, each serving a specific purpo
 
 ## Directory Structure
 
-````plaintext
+```plaintext
 └── 📁video-call
     └── 📁api
         └── fetchlogs.js
@@ -75,8 +75,7 @@ The project is organized into several directories, each serving a specific purpo
     └── tsconfig.node.json
     └── vercel.json
     └── vite.config.ts
-    ```
-# Project Structure Documentation
+```
 
 ## Explanation
 
@@ -146,6 +145,7 @@ The project is organized into several directories, each serving a specific purpo
 3. **Configure Deployment**:
    - Vercel will automatically detect the `vercel.json` configuration and set up the deployment environment.
 4. **Deploy**:
+
    - Click "Deploy" to start the deployment process.
    - Vercel will handle building and deploying the project based on the configuration provided.
 
@@ -168,4 +168,7 @@ For detailed instructions on setting up and using specific tools and libraries, 
 - [Express.js Documentation](https://expressjs.com/)
 - [Firebase Documentation](https://firebase.google.com/docs)
 - [Vercel Documentation](https://vercel.com/docs)
-````
+
+```
+
+```
