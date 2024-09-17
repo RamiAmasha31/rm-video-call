@@ -6,7 +6,7 @@ The project is organized into several directories, each serving a specific purpo
 
 ## Directory Structure
 
-```plaintext
+````plaintext
 └── 📁video-call
     └── 📁api
         └── fetchlogs.js
@@ -75,6 +75,7 @@ The project is organized into several directories, each serving a specific purpo
     └── tsconfig.node.json
     └── vercel.json
     └── vite.config.ts
+    ```
 # Project Structure Documentation
 
 ## Explanation
@@ -167,4 +168,4 @@ For detailed instructions on setting up and using specific tools and libraries, 
 - [Express.js Documentation](https://expressjs.com/)
 - [Firebase Documentation](https://firebase.google.com/docs)
 - [Vercel Documentation](https://vercel.com/docs)
-```
+````
