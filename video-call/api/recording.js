@@ -33,6 +33,7 @@ const storage = getStorage(firebaseApp);
 const client = new AssemblyAI({
   apiKey: process.env.ASSEMBLYAI_API_KEY,
 });
+
 export default async function handler(req, res) {
   const { callId, url } = req.body;
   try {
