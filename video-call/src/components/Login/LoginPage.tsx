@@ -4,6 +4,11 @@ import { useVideoClient } from "../VideoClientContext"; // Import the useVideoCl
 
 import "./Login.css";
 
+// Fetch the environment variables
+const isProduction = import.meta.env.MODE === "production"; // Check if in production
+const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002"; // Adjust based on environment
+const server_protocol = isProduction ? "https" : "http"; // Use HTTPS in production, HTTP in development
+// console.log(server_ip);
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,7 +16,6 @@ function LoginPage() {
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate(); // Initialize useNavigate hook
   const { setClientDetails } = useVideoClient(); // Destructure setClientDetails from context
-  const server_ip = "rmvideocall.vercel.app";
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -29,13 +33,16 @@ function LoginPage() {
       }
 
       // Make POST request to server endpoint using Fetch API
-      const response = await fetch(`https://${server_ip}/api/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        `${server_protocol}://${server_ip}/api/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       // Check if the response is OK
       if (!response.ok) {
@@ -62,6 +69,7 @@ function LoginPage() {
       <form onSubmit={handleFormSubmit}>
         <div className="user-box">
           <input
+            type="email"
             value={email}
             placeholder="Enter email address here"
             onChange={(ev) => setEmail(ev.target.value)}
@@ -70,9 +78,9 @@ function LoginPage() {
         </div>
         <div className="user-box">
           <input
+            type="password"
             value={password}
             placeholder="Enter password here"
-            type="password"
             onChange={(ev) => setPassword(ev.target.value)}
           />
           <label className="errorLabel">{passwordError}</label>

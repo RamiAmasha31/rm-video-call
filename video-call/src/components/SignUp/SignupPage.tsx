@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignupPage.css";
 
+// Fetch the environment variables
+const isProduction = import.meta.env.MODE === "production"; // Check if in production
+const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002"; // Adjust based on environment
+const server_protocol = isProduction ? "https" : "http"; // Use HTTPS in production, HTTP in development
+
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -10,7 +15,6 @@ const SignupPage: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
   const navigate = useNavigate();
-  const server_ip = "rmvideocall.vercel.app";
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,19 +38,22 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`https://${server_ip}/api/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        `${server_protocol}://${server_ip}/api/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Signup failed");
       }
 
-      navigate("/");
+      navigate("/"); // Redirect to the home page or any other page after successful signup
     } catch (error) {
       console.error("Error during signup:", error);
       setEmailError("Signup failed, please try again");

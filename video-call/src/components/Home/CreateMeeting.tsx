@@ -20,7 +20,10 @@ import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import "./CreateMeeting.css";
 // import { Call } from "stream-chat";
-const server_ip = "rmvideocall.vercel.app";
+// Fetch environment variables
+const isProduction = import.meta.env.MODE === "production";
+const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002";
+const server_protocol = isProduction ? "https" : "http";
 const generateCallId = () => `call-${Math.random().toString(36).substr(2, 9)}`;
 // Define props type for MyUILayout component
 interface MyUILayoutProps {
@@ -41,7 +44,7 @@ const MyUILayout = React.memo<MyUILayoutProps>(
       try {
         // console.log(callId);
         const response = await fetch(
-          `https://${server_ip}/api/meeting-participants?callId=${callId}`, // Adjusted endpoint
+          `${server_protocol}://${server_ip}/api/meeting-participants?callId=${callId}`, // Adjusted endpoint
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -128,11 +131,14 @@ const MyUILayout = React.memo<MyUILayoutProps>(
           "and URL:",
           url
         );
-        const response = await fetch(`https://${server_ip}/api/recording`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ callId, url }),
-        });
+        const response = await fetch(
+          `${server_protocol}://${server_ip}/api/recording`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ callId, url }),
+          }
+        );
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -197,11 +203,14 @@ const CreateMeeting = () => {
     async (meetingId: any, userId: any) => {
       try {
         console.log("Sending meeting data to server with ID:", meetingId);
-        const response = await fetch(`https://${server_ip}/api/meeting`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ callId: meetingId, userId }),
-        });
+        const response = await fetch(
+          `${server_protocol}://${server_ip}/api/meeting`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ callId: meetingId, userId }),
+          }
+        );
 
         if (!response.ok) {
           const errorText = await response.text();

@@ -6,6 +6,11 @@ import "./Logs.css";
 import home from "../../assets/HomePage/home.png";
 import { useNavigate } from "react-router-dom";
 
+// Fetch environment variables
+const isProduction = import.meta.env.MODE === "production";
+const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002";
+const server_protocol = isProduction ? "https" : "http";
+
 const Logs: React.FC = () => {
   const { user } = useVideoClient(); // Get user from context
   const [logs, setLogs] = useState<string[]>([]);
@@ -16,7 +21,6 @@ const Logs: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const logsPerPage = 6;
   const navigate = useNavigate(); // Initialize useNavigate hook
-  const server_ip = "rmvideocall.vercel.app";
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -28,7 +32,7 @@ const Logs: React.FC = () => {
 
       try {
         const response = await fetch(
-          `https://${server_ip}/api/fetchlogs?userId=${user.id}`,
+          `${server_protocol}://${server_ip}/api/fetchlogs?userId=${user.id}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },

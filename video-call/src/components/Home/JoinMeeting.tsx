@@ -22,6 +22,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
+// Fetch environment variables
+const isProduction = import.meta.env.MODE === "production";
+const server_ip = isProduction ? "rmvideocall.vercel.app" : "localhost:3002";
+const server_protocol = isProduction ? "https" : "http";
+
 interface CallControlsProps {
   onLeave: () => void;
 }
@@ -36,8 +41,6 @@ const CallControls: React.FC<CallControlsProps> = ({ onLeave }) => (
 );
 
 const JoinMeeting = () => {
-  const server_ip = "rmvideocall.vercel.app";
-
   const navigate = useNavigate();
   const { client, user } = useVideoClient();
   const [callId, setCallId] = useState("");
@@ -47,7 +50,7 @@ const JoinMeeting = () => {
   const sendParticipantDataToServer = async (callId: any, userId: any) => {
     try {
       const response = await fetch(
-        `https://${server_ip}/api/meeting-add-participant`,
+        `${server_protocol}://${server_ip}/api/meeting-add-participant`,
         {
           method: "POST",
           headers: {
