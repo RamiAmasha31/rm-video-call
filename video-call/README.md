@@ -10,12 +10,10 @@ Welcome to the Video Conferencing Platform project! This application allows user
 2. [Features](#features)
 3. [System Environment](#system-environment)
 4. [Installation and Setup](#installation-and-setup)
-5. [Usage](#usage)
-6. [File Structure](#file-structure)
-7. [Code Documentation](#code-documentation)
-8. [User Guide](#user-guide)
-9. [Maintenance Guide](#maintenance-guide)
-10. [Promotion Video](#promotion-video)
+5. [File Structure](#file-structure)
+6. [Code Documentation](#code-documentation)
+7. [User Guide](#user-guide)
+8. [Maintenance Guide](#maintenance-guide)
 
 ## Introduction
 
