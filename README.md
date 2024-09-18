@@ -50,7 +50,7 @@ This project is designed to facilitate video conferencing with features such as 
 
 1. **Clone the Repository**:
    ```bash
-   git clone [<repository-url>](https://github.com/RamiAmasha31/rm-video-call)
+   git clone https://github.com/RamiAmasha31/rm-video-call
    ```
 2. **install Dependencies**: Navigate to both the server and client directories and run the following command in each:
 
@@ -76,7 +76,7 @@ STREAM_API_SECRET=your_stream_api_secret
 - **Run the server**:Navigate to the server directory and start the Express server:
 
 ```bash
-npm start
+node server.mjs
 ```
 
 - **Run the client side**: Navigate to the root directory (where the frontend is) and start the Vite development server:
@@ -85,9 +85,7 @@ npm start
 npm run dev
 ```
 
-## Usage
 
-After setting up, navigate to [http://localhost:3000](http://localhost:3000) to access the frontend and [http://localhost:5000](http://localhost:5000) for the backend API. Follow the on-screen instructions to create and manage meetings.
 
 ## File Structure
 
@@ -115,7 +113,7 @@ After setting up, navigate to [http://localhost:3000](http://localhost:3000) to 
 
 ## Code Documentation
 
-For detailed explanations of the code, please refer to the Code Documentation section in the project book Phase B.
+For detailed explanations of the code, please refer to the Appendix section in the project book Phase B.
 
 ## User Guide
 
@@ -125,8 +123,4 @@ For instructions on how to use the software, please refer to the User Guide sect
 
 For instructions on maintaining and updating the software, including system requirements and setup, please refer to the Maintenance Guide section in the project book Phase B.
 
-## Promotion Video
 
-Check out our promotion video for a quick overview of the project and its features!
-
-Feel free to replace the placeholders `<repository-url>`, `<your-video-id>` with actual values and modify as necessary for your project.
