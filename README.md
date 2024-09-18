@@ -84,3 +84,49 @@ npm start
 ```bash
 npm run dev
 ```
+
+## Usage
+
+After setting up, navigate to [http://localhost:3000](http://localhost:3000) to access the frontend and [http://localhost:5000](http://localhost:5000) for the backend API. Follow the on-screen instructions to create and manage meetings.
+
+## File Structure
+
+### API Folder
+
+- `api/fetchlogs.js`: Retrieves user logs from Firebase Firestore based on a user ID.
+- `api/login.js`: Authenticates users by verifying their email and password against Firebase Firestore.
+- `api/add-participant.js`: Adds a participant to a meeting by updating the participants list in Firestore.
+- `api/meeting-participants.js`: Retrieves the list of participants for a specified meeting from Firestore.
+- `api/meeting.js`: Creates a new meeting and adds it to Firestore.
+- `api/recording.js`: Handles audio transcription, generates a PDF of the transcription, and updates user logs in Firestore with the transcription URL.
+- `api/signup.js`: Handles user signup by creating a new user record in Firestore, hashing the password, and generating a Stream Chat token.
+
+### Server Folder
+
+- `Server.mjs`: Configures and initializes an Express server for handling API requests, serving static files, and managing middleware.
+
+### Components Directory
+
+- `Home/CreateMeeting.tsx`: Manages the creation and management of video meetings using the Stream Video SDK.
+- `Home/Homepage.tsx`: Renders the main landing page, including navigation and options for creating or joining meetings.
+- `Home/JoinMeeting.tsx`: Handles joining video calls and managing call interactions.
+- `Home/Logs.tsx`: Displays and manages transcription logs, including features for searching, filtering, and pagination.
+- `Login/loginPage.tsx`: Renders a login form for user authentication and manages form submission.
+
+## Code Documentation
+
+For detailed explanations of the code, please refer to the Code Documentation section in the project book Phase B.
+
+## User Guide
+
+For instructions on how to use the software, please refer to the User Guide section in the project book Phase B.
+
+## Maintenance Guide
+
+For instructions on maintaining and updating the software, including system requirements and setup, please refer to the Maintenance Guide section in the project book Phase B.
+
+## Promotion Video
+
+Check out our promotion video for a quick overview of the project and its features!
+
+Feel free to replace the placeholders `<repository-url>`, `<your-video-id>` with actual values and modify as necessary for your project.
