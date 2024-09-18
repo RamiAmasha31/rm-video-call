@@ -17,7 +17,6 @@ https://github.com/user-attachments/assets/19ed8705-9d1a-4e4a-94f4-660a11db08eb
 7. [Code Documentation](#code-documentation)
 8. [User Guide](#user-guide)
 9. [Maintenance Guide](#maintenance-guide)
-10. [Promotion Video](#promotion-video)
 
 ## Introduction
 
