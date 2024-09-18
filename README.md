@@ -50,7 +50,7 @@ This project is designed to facilitate video conferencing with features such as 
 
 1. **Clone the Repository**:
    ```bash
-   git clone <repository-url>
+   git clone [<repository-url>](https://github.com/RamiAmasha31/rm-video-call)
    ```
 2. **install Dependencies**: Navigate to both the server and client directories and run the following command in each:
 
