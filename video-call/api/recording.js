@@ -29,12 +29,15 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
+
 // Initialize AssemblyAI
 const client = new AssemblyAI({
   apiKey: process.env.ASSEMBLYAI_API_KEY,
 });
+
 /**
- * Handles the process of transcribing audio, generating a PDF of the transcription, and updating user logs in Firestore with the transcription URL.
+ * Handles the process of transcribing audio, generating a PDF of the transcription,
+ * and updating user logs in Firestore with the transcription URL and createdAt timestamp.
  *
  * @function handler
  * @param {Object} req - The HTTP request object.
@@ -106,6 +109,9 @@ export default async function handler(req, res) {
       const meetingData = meetingSnapshot.docs[0].data();
       const participants = meetingData.participants || [];
 
+      // Create a map to track createdAt times for each URL
+      const urlCreatedAtMap = new Map();
+
       // Update each participant's logs field in Firestore
       for (const userId of participants) {
         // Query for the user document
@@ -120,8 +126,22 @@ export default async function handler(req, res) {
           const userData = userDoc.data();
           const logs = userData.logs || [];
 
-          // Add the download URL to the logs
-          logs.push(downloadURL);
+          // Get the current timestamp
+          const createdAt = new Date().toISOString();
+
+          // Check if the URL already has an associated createdAt time
+          if (!urlCreatedAtMap.has(downloadURL)) {
+            urlCreatedAtMap.set(downloadURL, createdAt);
+          }
+
+          // Prepare log entry
+          const logEntry = {
+            url: downloadURL,
+            createdAt: urlCreatedAtMap.get(downloadURL),
+          };
+
+          // Add the log entry to logs
+          logs.push(logEntry);
 
           await updateDoc(userDoc.ref, { logs });
         } else {
