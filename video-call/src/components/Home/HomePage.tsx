@@ -1,4 +1,6 @@
-import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import createMeeting from "../../assets/HomePage/workshop.png";
 import joinMeeting from "../../assets/HomePage/join.png";
@@ -8,29 +10,64 @@ import moaed from "../../assets/HomePage/moaed.jpg";
 import ronen from "../../assets/HomePage/ronen.png";
 import exit from "../../assets/HomePage/exit.png";
 import logo from "../../assets/HomePage/logo.png";
+import ConUs from "../../assets/HomePage/email.png";
 import { useNavigate } from "react-router-dom";
 import "../Home/HomePage.css";
-/**
- * The `HomePage` component displays the main page of the application.
- * It includes navigation, sections for creating/joining meetings, viewing logs,
- * and information about the project and its staff members.
- *
- * @component
- * @example
- * return (
- *   <HomePage />
- * )
- */
+
+const tutorialSteps = [
+  {
+    text: "Welcome to RM-VIDEO-CONFRENCE website! Here are some instructions to help you!",
+    image: logo, // Replace with your image path
+  },
+  {
+    text: "1. Create Meeting: Click on 'Create Meeting' to generate a new meeting ID and invite others.",
+    image: createMeeting, // Replace with your image path
+  },
+  {
+    text: "2. Join Meeting: Enter the meeting ID provided by the host to join an ongoing meeting.",
+    image: joinMeeting, // Replace with your image path
+  },
+  {
+    text: "3. Display Logs: Access your previous meeting transcriptions by clicking on 'Display Logs.'",
+    image: log, // Replace with your image path
+  },
+  {
+    text: "If you have any questions, feel free to reach out at :\n Ramiamasha84@gmail.com",
+    image: ConUs, // Replace with your image path
+  },
+];
+
 const HomePage: React.FC = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
-  /**
-   * Handles user logout by navigating to the home page.
-   *
-   * @function
-   * @returns {void}
-   */
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isModalOpen]);
+
   const handleLogout = () => {
     navigate("/");
+  };
+
+  const toggleModal = () => {
+    setModalOpen(!isModalOpen);
+    setCurrentStep(0);
+  };
+
+  const nextStep = () => {
+    if (currentStep < tutorialSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      toggleModal();
+    }
   };
 
   return (
@@ -39,13 +76,36 @@ const HomePage: React.FC = () => {
         <div className="brand-logo">
           <img src={logo} alt="Logo" />
         </div>
-        <img
-          src={exit}
-          onClick={handleLogout}
-          alt="Exit"
-          className="exit-icon"
-        />
+        <div className="icon-container">
+          <span className="help-icon" onClick={toggleModal} title="User Help">
+            <FontAwesomeIcon icon={faQuestionCircle} color="#d3d3d3" />
+          </span>
+          <img
+            src={exit}
+            onClick={handleLogout}
+            alt="Exit"
+            className="exit-icon"
+          />
+        </div>
       </nav>
+
+      {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={toggleModal}>
+              &times;
+            </span>
+            <h2>User Help</h2>
+            <div className="tutorial-step">
+              <img src={tutorialSteps[currentStep].image} alt="Tutorial Step" />
+              <p>{tutorialSteps[currentStep].text}</p>
+            </div>
+            <button onClick={nextStep}>
+              {currentStep < tutorialSteps.length - 1 ? "Next" : "Exit"}
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="main-content">
         <section className="cards-section">
@@ -103,7 +163,7 @@ const HomePage: React.FC = () => {
               <p>
                 Project supervisor and Senior Software engineer,
                 <br />
-                Rafael Advanced Defense Systems{" "}
+                Rafael Advanced Defense Systems
               </p>
             </div>
           </div>

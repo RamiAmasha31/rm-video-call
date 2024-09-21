@@ -24,23 +24,23 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+
 /**
  * API handler function to fetch user logs from Firebase Firestore.
- * 
+ *
  * This function handles incoming API requests to fetch logs for a specific user
  * based on the provided `userId`. It retrieves the user document from the Firestore
  * collection and returns the logs associated with that user.
- * 
+ *
  * @param {Object} req - The request object, containing query parameters.
  * @param {Object} res - The response object used to send back the result.
- * 
+ *
  * @returns {Object} - A JSON response containing the logs or an error message.
- * 
+ *
  * @throws {Object} - If the user ID is not provided or the user is not found,
  *                     the response will include a 400 or 404 status code respectively.
  *                     In case of an internal server error, a 500 status code with
  *                     error details will be returned.
-
  */
 export default async function handler(req, res) {
   const { userId } = req.query;
@@ -63,7 +63,13 @@ export default async function handler(req, res) {
     const userData = userDoc.data();
     const logs = userData.logs || [];
 
-    res.status(200).json(logs);
+    // Map logs to include both URL and createdAt timestamp
+    const formattedLogs = logs.map((log) => ({
+      url: log.url,
+      createdAt: log.createdAt,
+    }));
+
+    res.status(200).json(formattedLogs);
   } catch (error) {
     console.error("Error fetching logs:", error.message, error.stack);
     res
