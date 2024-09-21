@@ -4,7 +4,10 @@ Welcome to the Video Conferencing Platform project! This application allows user
 [Visit the Live Site](https://rmvideocall.vercel.app/)
 
 
-https://github.com/user-attachments/assets/19ed8705-9d1a-4e4a-94f4-660a11db08eb
+
+
+https://github.com/user-attachments/assets/cc9b8297-f76a-4d77-90a7-4a178c2d241b
+
 
 
 ## Table of Contents
